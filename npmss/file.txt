@@ -1,0 +1,3 @@
+npm install lucide-react
+npm install @clerk/themes
+npm install @clerk/nextjs

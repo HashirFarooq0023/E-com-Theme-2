@@ -1,0 +1,928 @@
+/* ---------------------------------------------- */
+/* 1. VARIABLES & RESET */
+/* ---------------------------------------------- */
+:root {
+  /* Deep void background */
+  --bg: #030305;
+  
+  /* Glassy Panels */
+  --panel: rgba(20, 20, 25, 0.4); 
+  --card: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
+
+  --muted: #94a3b8;
+  --accent: #f8fafc;
+  --primary: #3b82f6;
+  
+  --radius: 24px; 
+  --radius-sm: 12px;
+  
+  --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  --glow: 0 0 20px rgba(59, 130, 246, 0.15);
+  
+  --font: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background-color: var(--bg);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 24px 64px;
+}
+
+/* ---------------------------------------------- */
+/* 2. NAVBAR CONTAINER & LAYOUT */
+/* ---------------------------------------------- */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  margin-bottom: 30px;
+  
+  /* The Bubble Effect */
+  border-radius: 999px;
+  background: rgba(10, 10, 12, 0.5);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 50;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Spacing for Home/Categories */
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-weight: 800;
+  font-size: 20px;
+  background: linear-gradient(135deg, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  background-clip: text; 
+  color: transparent;
+  margin-right: 12px;
+  text-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
+
+/* ---------------------------------------------- */
+/* 3. NAVIGATION BUTTONS (PILLS & ICONS) */
+/* ---------------------------------------------- */
+
+/* 💊 PILL BUTTONS (Home/Categories) */
+.nav-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  height: 42px;
+  border-radius: 999px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-pill-btn:hover, .nav-dropdown-wrapper:hover .nav-pill-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-pill-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+.pill-caret {
+  margin-left: 4px;
+  transition: transform 0.2s ease;
+  opacity: 0.6;
+}
+
+.nav-dropdown-wrapper:hover .pill-caret {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+/* ⭕ ICON BUTTONS (Cart/User) */
+.icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: scale(1.15);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-btn.active {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  transform: scale(1.05);
+}
+
+.icon-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  height: 18px;
+  min-width: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 99px;
+  border: 2px solid #000;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+.nav-avatar-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ---------------------------------------------- */
+/* 4. DROPDOWN MENU (Click-based) */
+/* ---------------------------------------------- */
+.nav-dropdown-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 42px; 
+}
+
+
+
+/* ✅ NEW: Only show when React adds the "open" class */
+.nav-dropdown-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: 55px;
+  left: 0; /* Align Left */
+  width: 220px;
+  
+  /* Glass Effect */
+  background: rgba(10, 10, 12, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  z-index: 100;
+
+  /* Animation Initial State (Hidden) */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.dropdown-arrow {
+  position: absolute;
+  top: -6px;
+  left: 20px; /* Align arrow with Left Button */
+  width: 12px;
+  height: 12px;
+  background: rgba(10, 10, 12, 0.85);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+}
+
+.dropdown-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item:hover {
+  background: rgba(59, 130, 246, 0.15);
+  color: #fff;
+  padding-left: 18px; 
+}
+
+.dropdown-item.active {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 6px 4px;
+}
+
+/* ---------------------------------------------- */
+/* 5. HERO SECTION */
+/* ---------------------------------------------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 30px;
+  padding: 40px;
+  background: var(--panel);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 32px; 
+  box-shadow: var(--shadow);
+}
+
+.hero h1 {
+  margin: 10px 0 15px;
+  font-size: 38px;
+  line-height: 1.1;
+  background: linear-gradient(to bottom, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero .subtext {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.hero-stat {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.stat-card {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  min-width: 200px;
+  backdrop-filter: blur(12px);
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ---------------------------------------------- */
+/* 6. GENERAL BUTTONS */
+/* ---------------------------------------------- */
+.btn {
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+.btn.primary:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  border-color: rgba(255,255,255,0.4);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid transparent;
+}
+
+.btn.ghost:hover {
+  color: #fff;
+  background: var(--glass-highlight);
+}
+
+.btn.block {
+  width: 100%;
+}
+
+/* ---------------------------------------------- */
+/* 7. AUTH PAGE */
+/* ---------------------------------------------- */
+.auth-main {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 20px;
+}
+
+.auth-panel {
+  width: 100%;
+  max-width: 460px;
+  background: var(--panel); 
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+}
+
+.panel-header h2 {
+  font-size: 1.8rem;
+  color: #fff;
+  text-align: center;
+}
+
+.panel-header .subtitle {
+  color: var(--muted);
+  text-align: center;
+  display: block;
+  margin-bottom: 24px;
+}
+
+.tabs-container {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+  color: #e2e8f0;
+}
+
+.tab-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+}
+
+.clerk-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+/* Hide Clerk Header Text */
+.cl-headerTitle, .cl-headerSubtitle {
+  display: none !important;
+}
+
+/* ---------------------------------------------- */
+/* 8. PRODUCTS GRID */
+/* ---------------------------------------------- */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.product-card {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.05);
+}
+
+.product-thumb {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-thumb img {
+  transform: scale(1.05);
+}
+
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.product-body {
+  padding: 20px;
+}
+
+.product-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.product-top h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.price {
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.desc {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+/* ---------------------------------------------- */
+/* 9. FORMS & INPUTS */
+/* ---------------------------------------------- */
+.form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+label input, 
+.cart-actions input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+label input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+}
+
+/* ---------------------------------------------- */
+/* 10. CART & CHECKOUT */
+/* ---------------------------------------------- */
+.cart-row {
+  background: var(--card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.checkout {
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.user-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-placeholder {
+  width: 70px;
+  height: 70px;
+  line-height: 70px;
+  font-size: 28px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+/* ---------------------------------------------- */
+/* 11. MEDIA QUERIES */
+/* ---------------------------------------------- */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .layout { grid-template-columns: 1fr; }
+}
+
+
+
+/* ---------------------------------------------- */
+/* 12. ADMIN MENU SPECIFICS */
+/* ---------------------------------------------- */
+/* Make the Admin Menu wider */
+.nav-dropdown-menu.admin-menu {
+  width: 260px; 
+  right: 0;
+  left: auto; 
+}
+
+/* Section Headers inside Menu */
+.menu-header {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #64748b; 
+  font-weight: 700;
+  padding: 8px 14px 4px;
+  letter-spacing: 0.5px;
+}
+
+/* Ensure icons align nicely */
+.dropdown-item svg {
+  opacity: 0.8;
+}
+
+.dropdown-item:hover svg {
+  opacity: 1;
+}
+
+/* ------------------------------------ */
+/* 13. ADMIN TABLE STYLES */
+/* ------------------------------------ */
+
+/* The Row Card */
+.admin-row {
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.2s ease;
+  /* ✨ Add transparent border so adding one on hover doesn't jump the layout */
+  border: 1px solid transparent; 
+}
+
+/* Rounded corners for the row "strip" */
+.admin-row td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.admin-row td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.admin-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+  
+  /* ❌ REMOVED: transform: scale(1.01); (This caused the vibration) */
+  
+  /* ✅ ADDED: Stable highlight effects */
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Action Buttons (Square Icons) */
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+}
+
+.action-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444; /* Red for trash */
+}
+
+.action-btn.edit:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6; /* Blue for edit */
+}
+
+/* ========================================= */
+/* ADMIN FORM STYLES                   */
+/* ========================================= */
+
+/* 1. The Grid Layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Mobile: 1 column */
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr; /* Desktop: 2 columns */
+  }
+}
+
+/* Make specific elements span the full width */
+/* (Like the Image Drop Zone, Description, etc.) */
+.form-grid > div:has(textarea),
+.form-grid > div:has(.drop-zone),
+.form-grid > div:has(input[name="highlights"]) {
+  grid-column: 1 / -1;
+}
+
+/* 2. Labels */
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8; /* Muted gray text */
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+/* 3. Inputs & Textareas */
+input, textarea, select {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.4); /* Dark glass background */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+/* Focus State (When you click the input) */
+input:focus, textarea:focus, select:focus {
+  border-color: #3b82f6; /* Blue border */
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); /* Blue glow */
+}
+
+/* 4. Drag & Drop Zone Styling */
+.drop-zone {
+  width: 100%;
+  height: 180px;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.drop-zone:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.drop-zone.active {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  transform: scale(0.99);
+}
+
+/* 5. Icon Button (Back Button) */
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%; /* Circle */
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background: rgba(255,255,255,0.1) !important;
+  transform: translateX(-2px); /* Slight move left */
+}
+
+
+/* ========================================= */
+/* CATEGORY DROPDOWN STYLE                     */
+/* ========================================= */
+
+.custom-select-trigger {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.custom-select-trigger:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* The Popup Menu */
+.custom-options-list {
+  position: absolute;
+  top: calc(100% + 8px); /* 8px gap below input */
+  left: 0;
+  width: 100%;
+  max-height: 250px;
+  overflow-y: auto; /* Scroll if too many items */
+  
+  /* Glass Effect for the menu */
+  background: rgba(10, 10, 12, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 6px;
+  z-index: 100;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+/* Individual Option */
+.custom-option {
+  padding: 10px 14px;
+  color: #94a3b8;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.1s;
+}
+
+.custom-option:hover {
+  background: rgba(59, 130, 246, 0.15); /* Blue hover */
+  color: #fff;
+}
+
+.custom-option.selected {
+  background: #3b82f6;
+  color: #fff;
+}
+
+/* Scrollbar styling for the list */
+.custom-options-list::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-options-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-options-list::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+}
