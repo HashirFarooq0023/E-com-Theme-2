@@ -16,7 +16,7 @@ export async function findUserByEmail(email) {
 export async function createUser({ email, password, name }) {
   try {
     // Generate a simple ID (since your DB expects a string)
-    const newId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const newId = `user_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 
     const query = `
       INSERT INTO users (id, email, password, name, role, created_at, updated_at)

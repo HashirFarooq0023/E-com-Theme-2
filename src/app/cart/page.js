@@ -168,7 +168,7 @@ export default function CartPage() {
                     <div className="cart-info">
                       <h4>{item.name}</h4>
                       <p className="muted">{item.category}</p>
-                      <div className="price-tag">${Number(item.price).toFixed(2)}</div>
+                      <div className="price-tag">PKR {Number(item.price).toFixed(2)}</div>
                     </div>
 
                     <div className="cart-controls">
@@ -188,7 +188,7 @@ export default function CartPage() {
               <div className="cart-footer">
                 <div className="total-row">
                   <span>Subtotal</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>PKR {total.toFixed(2)}</span>
                 </div>
                 <div className="total-row">
                   <span>Shipping</span>
@@ -196,7 +196,7 @@ export default function CartPage() {
                 </div>
                 <div className="total-row grand-total">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>PKR {total.toFixed(2)}</span>
                 </div>
               </div>
             </section>

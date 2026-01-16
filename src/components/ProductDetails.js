@@ -117,7 +117,7 @@ export default function ProductDetails({ product, user ,categories= []  }) {
                 )}
               </div>
 
-              <div className="price-tag">${Number(product.price).toFixed(2)}</div>
+              <div className="price-tag">PKR {Number(product.price).toFixed(2)}</div>
             </div>
 
             <div className="divider"></div>

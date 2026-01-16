@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import TopNav from "./TopNav"; 
 import WaterButton from "./WaterButton";
+import TopRatedCarousel from "./TopRatedCarousel";
 
 export default function ProductFeed({ initialProducts, user }) {
   const [products] = useState(initialProducts);
@@ -85,39 +86,19 @@ export default function ProductFeed({ initialProducts, user }) {
         user={user}
       />
 
-      {/* HERO SECTION */}
-      <header className="hero">
-        <div>
-          <p className="eyebrow">Ecommerce Starter</p>
-          <h1>Modern storefront with cart & checkout.</h1>
-          <p className="subtext">
-            Browse our collection, view product details, and manage your orders.
-          </p>
-          <div className="hero-actions">
-            <WaterButton variant="primary" onClick={scrollToProducts}>
-              Start Shopping
-            </WaterButton>
-            <WaterButton variant="ghost" onClick={clearCart}>
-              Clear Cart
-            </WaterButton>
-          </div>
-        </div>
-        <div className="hero-stat">
-          <div className="stat-card">
-            <div className="stat-value">${cartTotal.toFixed(2)}</div>
-            <div className="stat-label">Cart Total</div>
-          </div>
-        </div>
-      </header>
+  
 
       {/* MAIN CONTENT */}
       <main className="layout" style={{ display: 'block', maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+        
+        {/* TOP RATED CAROUSEL */}
+        <TopRatedCarousel products={products} />
         
         {/* PRODUCT GRID */}
         <section className="panel products" style={{ width: '100%' }}>
           <div className="panel-header">
             <div>
-              <h2>{selectedCategory ? `${selectedCategory} Products` : "All Products"}</h2>
+              <h2>{selectedCategory ? `${selectedCategory.toUpperCase()} ` : "All Products"}</h2>
               <p style={{color: '#94a3b8'}}>Browse the catalog and add items to your cart.</p>
             </div>
             <span className="pill" style={{background: 'rgba(255,255,255,0.1)', padding:'4px 12px', borderRadius:'12px'}}>
@@ -127,7 +108,7 @@ export default function ProductFeed({ initialProducts, user }) {
           
           <div className="product-grid">
             {visibleProducts.map((product) => (
-              /* 🔗 WRAP CARD IN LINK to go to Details Page */
+              
               <Link 
                 href={`/products/${product.id}`} 
                 key={product.id}
@@ -143,7 +124,7 @@ export default function ProductFeed({ initialProducts, user }) {
                   <div className="product-body" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div className="product-top">
                       <h3>{product.name}</h3>
-                      <span className="price">${Number(product.price).toFixed(2)}</span>
+                      <span className="price">PKR {Number(product.price).toFixed(2)}</span>
                     </div>
 
                     {/* Rating Mini-Badge */}

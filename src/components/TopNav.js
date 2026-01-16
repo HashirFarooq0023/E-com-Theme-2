@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from "react";
+// ✅ FIXED IMPORTS: Added useEffect and useRef
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ShoppingBag, User, Home, LayoutGrid, ChevronDown, Settings, List, Package, Users } from "lucide-react"; 
@@ -19,6 +20,29 @@ export default function TopNav({
   const [isCatOpen, setIsCatOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
+  // 1. Create a Ref to track the navigation DOM element
+  const navRef = useRef(null);
+
+  // 2. Add Event Listener to detect clicks outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // If the nav exists and the click happened OUTSIDE of it
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        setIsCatOpen(false);
+        setIsAdminOpen(false);
+      }
+    }
+
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    // Clean up
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  
   function handleSelect(category) {
     if (onSelectCategory) onSelectCategory(category);
     setIsCatOpen(false);
@@ -34,7 +58,7 @@ export default function TopNav({
       .slice(0, 2);
   }
 
-  // ✅ FIX: Define styles as an object instead of <style jsx>
+  // Define styles as an object
   const styles = {
     wrapper: {
       width: '24px',
@@ -62,7 +86,8 @@ export default function TopNav({
   };
 
   return (
-    <nav className="top-nav">
+    // 3. Attach the ref to the main nav container
+    <nav className="top-nav" ref={navRef}>
       {/* LEFT: Navigation */}
       <div className="nav-left">
         <Link href="/" className="logo">
@@ -111,7 +136,7 @@ export default function TopNav({
         </div>
       </div>
 
-      {/* 👉 RIGHT: Actions + Admin */}
+      {/* RIGHT: Actions + Admin */}
       <div className="nav-right">
         
         {/* Cart */}

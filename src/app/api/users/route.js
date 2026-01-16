@@ -1,22 +1,18 @@
 import { NextResponse } from "next/server";
-import { syncUser } from "@/lib/users"; 
+import { getAllUsers } from "@/lib/user";
+import { getSession } from "@/lib/auth";
 
-export async function POST(req) {
+// GET all users (Admin only)
+export async function GET() {
   try {
-    const { clerkId, email, name } = await req.json();
-
-    if (!clerkId || !email) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    // Check Admin Auth
+    const session = await getSession();
+    if (!session || session.role !== 'admin') {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Call the library function
-    const result = await syncUser(clerkId, email, name);
-
-    if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, action: result.action });
+    const users = await getAllUsers();
+    return NextResponse.json(users);
 
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

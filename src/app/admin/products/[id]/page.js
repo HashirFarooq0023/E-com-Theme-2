@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, UploadCloud, X, Loader2, ChevronDown } from "lucide-react"; 
+import { useRouter, useParams } from "next/navigation";
+import { ArrowLeft, Save, UploadCloud, X, Loader2, ChevronDown, Edit } from "lucide-react"; 
 import WaterButton from "@/components/WaterButton";
 import TopNav from "@/components/TopNav";
 import { useRouteAccess } from "@/hooks/useRouteAccess";
@@ -13,17 +13,58 @@ const CATEGORIES = [
   "Skin Care", "Home & Garden", "Beauty", "Sports", "Others"
 ];
 
-export default function AddProductPage() {
-  // Use centralized permission check
+export default function EditProductPage() {
   const { user, loading: checkingAuth } = useRouteAccess();
   const router = useRouter();
+  const params = useParams();
+  const productId = params?.id;
 
-  // Form State
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
   const dropdownRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    category: "", 
+    stock: "",
+    rating: 4.5,
+    images: [], 
+    description: "",
+  });
+
+  // Fetch product data
+  useEffect(() => {
+    if (!checkingAuth && user && productId) {
+      async function fetchProduct() {
+        try {
+          const res = await fetch(`/api/products/${productId}`);
+          if (!res.ok) throw new Error("Failed to fetch product");
+          const product = await res.json();
+          
+          setFormData({
+            name: product.name || "",
+            price: product.price || "",
+            category: product.category || "",
+            stock: product.stock || "",
+            rating: product.rating || 4.5,
+            images: Array.isArray(product.images) ? product.images : (product.image ? [product.image] : []),
+            description: product.description || "",
+          });
+        } catch (error) {
+          console.error("Error fetching product:", error);
+          alert("Failed to load product. Redirecting...");
+          router.push("/admin/products");
+        } finally {
+          setLoading(false);
+        }
+      }
+      fetchProduct();
+    }
+  }, [checkingAuth, user, productId, router]);
 
   // Close dropdown if clicking outside
   useEffect(() => {
@@ -35,16 +76,6 @@ export default function AddProductPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [dropdownRef]);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    category: "", 
-    stock: "",
-    rating: 4.5,
-    images: [], 
-    description: "",
-  });
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -94,7 +125,6 @@ export default function AddProductPage() {
         return;
       }
 
-      // Check file size (max 2MB per image to prevent timeout)
       const maxSize = 2 * 1024 * 1024; // 2MB
       if (file.size > maxSize) {
         alert(`${file.name} is too large. Maximum size is 2MB per image.`);
@@ -122,14 +152,14 @@ export default function AddProductPage() {
     }));
   }
 
-  // --- SUBMIT TO DATABASE ---
+  // --- UPDATE PRODUCT ---
   async function handleSubmit(e) {
     e.preventDefault();
-    setLoading(true);
+    setSaving(true);
 
     if (formData.images.length === 0) {
       alert("Please upload at least one image.");
-      setLoading(false);
+      setSaving(false);
       return;
     }
 
@@ -144,15 +174,15 @@ export default function AddProductPage() {
     };
 
     try {
-      const res = await fetch("/api/products", {
-        method: "POST",
+      const res = await fetch(`/api/products/${productId}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to create product");
+        throw new Error(errorData.error || "Failed to update product");
       }
       
       router.push("/admin/products");
@@ -161,12 +191,11 @@ export default function AddProductPage() {
       console.error(error);
       alert(`Error: ${error.message}`);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   }
 
-  // 3. RENDER LOADER WHILE CHECKING
-  if (checkingAuth) {
+  if (checkingAuth || loading) {
     return (
       <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
         <Loader2 className="spin" size={40} color="#3b82f6" />
@@ -176,7 +205,7 @@ export default function AddProductPage() {
 
   return (
     <div className="page">
-      <TopNav categories={[]} user={user} /> 
+      <TopNav categories={[]} user={user} />
 
       <div className="product-form-container">
         
@@ -187,8 +216,9 @@ export default function AddProductPage() {
             </button>
           </Link>
           <div className="header-content">
-            <h1>Add New Product</h1>
-        
+     
+            <h1>Edit Product</h1>
+         
           </div>
         </div>
 
@@ -207,7 +237,7 @@ export default function AddProductPage() {
                 <strong>⚠️ File Size Limits:</strong>
                 <ul>
                   <li>Maximum <strong>2MB per image</strong></li>
-         
+                
                 </ul>
               </div>
 
@@ -348,13 +378,13 @@ export default function AddProductPage() {
             </div>
 
             <div className="form-actions">
-              <WaterButton variant="primary" type="submit" disabled={loading}>
-                {loading ? (
+              <WaterButton variant="primary" type="submit" disabled={saving}>
+                {saving ? (
                   <Loader2 className="spin" size={18} />
                 ) : (
                   <>
                     <Save size={18} style={{ marginRight: '8px' }} /> 
-                    Save Product
+                    Update Product
                   </>
                 )}
               </WaterButton>

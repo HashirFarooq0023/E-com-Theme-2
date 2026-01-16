@@ -34,8 +34,15 @@ export default async function ProductPage({ params }) {
     );
   }
 
-  // 4. Render Client Component
-  return <ProductDetails product={product} user={session?.user} categories={categories}/>;
+  // 4. Serialize User (match format from page.js)
+  const user = session ? {
+    id: session.userId,
+    email: session.email,
+    name: session.name || "User"
+  } : null;
+
+  // 5. Render Client Component
+  return <ProductDetails product={product} user={user} categories={categories}/>;
 }
 
 const styles = {

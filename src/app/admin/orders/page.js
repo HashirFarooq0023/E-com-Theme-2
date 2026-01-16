@@ -1,24 +1,22 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import TopNav from "@/components/TopNav";
 import WaterButton from "@/components/WaterButton";
+import { useRouteAccess } from "@/hooks/useRouteAccess";
 import { 
   Loader2, Calendar, Filter, Package, MapPin, 
   ChevronDown, ChevronUp, Clock, CheckCircle, XCircle, Settings 
 } from "lucide-react";
 
 export default function AdminOrdersPage() {
-  const router = useRouter();
-  
-  // Auth & Loading
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Use centralized permission check
+  const { user, loading: authLoading } = useRouteAccess();
   
   // Data
   const [orders, setOrders] = useState([]);
   const [expandedOrderId, setExpandedOrderId] = useState(null); 
+  const [loading, setLoading] = useState(true);
 
   // Filter State
   const [activeFilter, setActiveFilter] = useState("all"); 
@@ -45,26 +43,12 @@ export default function AdminOrdersPage() {
     }
   }, []);
 
-  // 2. Auth Check & Initial Data
+  // 2. Fetch Orders when user is authenticated
   useEffect(() => {
-    async function init() {
-      try {
-        const sessionRes = await fetch("/api/auth/session");
-        const sessionData = await sessionRes.json();
-        
-        if (!sessionData.user || sessionData.user.role !== 'admin') {
-          router.push("/");
-          return;
-        }
-        setUser(sessionData.user);
-        fetchOrders("all"); 
-      } catch (err) {
-        console.error("Auth init error:", err);
-        setLoading(false);
-      }
+    if (!authLoading && user) {
+      fetchOrders("all");
     }
-    init();
-  }, [router, fetchOrders]);
+  }, [authLoading, user, fetchOrders]);
 
   // 3. Status Update Handler
   async function handleUpdateStatus(orderId, newStatus) {
@@ -166,7 +150,7 @@ export default function AdminOrdersPage() {
                             <span className="name">{address.name || "Guest"}</span>
                           </div>
                         </td>
-                        <td className="order-total">${Number(order.total_amount)}</td>
+                        <td className="order-total">PKR {Number(order.total_amount).toFixed(2)}</td>
                         <td>
                           <span className="status-badge" style={{ color: getStatusColor(order.status), borderColor: getStatusColor(order.status) }}>
                             {order.status.toUpperCase()}
@@ -198,7 +182,7 @@ export default function AdminOrdersPage() {
                                           <span className="item-meta">Qty: {item.quantity}</span>
                                         </div>
                                         <div style={{ marginLeft: 'auto' }}>
-                                           <span className="item-total">${(item.quantity * item.price).toFixed(2)}</span>
+                                           <span className="item-total">PKR {(item.quantity * item.price).toFixed(2)}</span>
                                         </div>
                                       </li>
                                     ))}
@@ -243,7 +227,7 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{__html: `
         .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
         .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         h1 { margin: 0; font-size: 1.8rem; }
@@ -313,7 +297,7 @@ export default function AdminOrdersPage() {
           .details-container { grid-template-columns: 1fr; gap: 24px; } 
           .actions-col { border-left: none; padding-left: 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; } 
         }
-      `}</style>
+      `}} />
     </div>
   );
 }

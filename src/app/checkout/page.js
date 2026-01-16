@@ -56,7 +56,7 @@ export default function CheckoutPage() {
       }
       setOrderStatus({
         type: "success",
-        message: `Order ${data.orderId} placed. Total $${data.total.toFixed(
+        message: `Order ${data.orderId} placed. Total PKR ${data.total.toFixed(
           2
         )}`,
       });
@@ -84,7 +84,7 @@ export default function CheckoutPage() {
               <h2>Checkout</h2>
               <p>Enter your details to complete the order.</p>
             </div>
-            <span className="pill">${total.toFixed(2)}</span>
+            <span className="pill">PKR {total.toFixed(2)}</span>
           </div>
           {cart.length === 0 ? (
             <p className="muted">No items to checkout.</p>
@@ -96,11 +96,11 @@ export default function CheckoutPage() {
                     <div>
                       <div className="cart-title">{item.name}</div>
                       <div className="muted">
-                        {item.quantity} × ${item.price}
+                        {item.quantity} × PKR {item.price}
                       </div>
                     </div>
                     <div className="muted">
-                      ${(Number(item.price) * Number(item.quantity || 1)).toFixed(
+                      PKR {(Number(item.price) * Number(item.quantity || 1)).toFixed(
                         2
                       )}
                     </div>

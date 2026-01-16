@@ -469,15 +469,6 @@ a {
   backdrop-filter: blur(10px);
 }
 
-.clerk-wrapper {
-  display: flex;
-  justify-content: center;
-}
-
-/* Hide Clerk Header Text */
-.cl-headerTitle, .cl-headerSubtitle {
-  display: none !important;
-}
 
 /* ---------------------------------------------- */
 /* 8. PRODUCTS GRID */

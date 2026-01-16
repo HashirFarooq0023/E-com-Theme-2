@@ -8,7 +8,14 @@ const pool = mysql.createPool({
   database: process.env.MYSQL_DATABASE || 'ecommerce_db',
   waitForConnections: true,
   connectionLimit: 10, 
-  queueLimit: 0
+  queueLimit: 0,
+  // Timeout settings to prevent ECONNABORTED errors
+  connectTimeout: 60000, // 60 seconds to establish connection
+  acquireTimeout: 60000, // 60 seconds to acquire connection from pool
+  timeout: 60000, // 60 seconds query timeout
+  // Enable keep-alive to prevent connection drops
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
 });
 
 // Optional: Test connection when the app starts (Dev mode only)

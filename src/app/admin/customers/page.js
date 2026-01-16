@@ -1,46 +1,36 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import TopNav from "@/components/TopNav";
+import { useRouteAccess } from "@/hooks/useRouteAccess";
 import { Loader2, Search, Users, Mail, Calendar, Phone, MapPin } from "lucide-react";
 
 export default function AdminCustomersPage() {
-  const router = useRouter();
+  // Use centralized permission check
+  const { user, loading: authLoading } = useRouteAccess();
 
   // State
-  const [user, setUser] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  // 1. Auth & Data Fetching
+  // 1. Fetch Customers when user is authenticated
   useEffect(() => {
-    async function init() {
-      try {
-        // Check Session
-        const sessionRes = await fetch("/api/auth/session");
-        const sessionData = await sessionRes.json();
-        
-        if (!sessionData.user || sessionData.user.role !== 'admin') {
-          router.push("/");
-          return;
+    if (!authLoading && user) {
+      async function fetchCustomers() {
+        try {
+          const res = await fetch("/api/customers");
+          const data = await res.json();
+          setCustomers(Array.isArray(data) ? data : []);
+        } catch (error) {
+          console.error("Failed to load customers", error);
+        } finally {
+          setLoading(false);
         }
-        setUser(sessionData.user);
-
-        // Fetch Customers
-        const res = await fetch("/api/customers");
-        const data = await res.json();
-        setCustomers(Array.isArray(data) ? data : []);
-
-      } catch (error) {
-        console.error("Failed to load customers", error);
-      } finally {
-        setLoading(false);
       }
+      fetchCustomers();
     }
-    init();
-  }, [router]);
+  }, [authLoading, user]);
 
   // 2. Search Filter (Updated to include Phone)
   const filteredCustomers = customers.filter(c => 
@@ -167,7 +157,7 @@ export default function AdminCustomersPage() {
 
                       {/* Stats: Spent */}
                       <td style={{textAlign: 'right', fontWeight: 600, color: '#22c55e'}}>
-                        ${Number(customer.total_spent).toFixed(2)}
+                        PKR {Number(customer.total_spent).toFixed(2)}
                       </td>
                     </tr>
                   ))}
@@ -178,7 +168,7 @@ export default function AdminCustomersPage() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{__html: `
         .container {
           max-width: 1100px;
           margin: 0 auto;
@@ -312,7 +302,7 @@ export default function AdminCustomersPage() {
         }
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-      `}</style>
+      `}} />
     </div>
   );
 }

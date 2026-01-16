@@ -28,7 +28,7 @@ export async function createOrder(orderData) {
         shippingAddress.name,
         shippingAddress.phone1,
         shippingAddress.phone2 || null,
-        shippingAddress.house,
+        shippingAddress.house || shippingAddress.house_no || null,
         shippingAddress.street,
         shippingAddress.area,
         shippingAddress.city,
