@@ -2,15 +2,22 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Star, ShoppingBag } from "lucide-react"; 
-import TopNav from "./TopNav"; 
+import { useSearchParams } from "next/navigation"; // Import useSearchParams
+import { Star, ShoppingBag } from "lucide-react";
+import TopNav from "./TopNav";
 import WaterButton from "./WaterButton";
 import TopRatedCarousel from "./TopRatedCarousel";
 
+import Toast from "./Toast";
+
 export default function ProductFeed({ initialProducts, user }) {
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get("category"); // Get category from URL
+
   const [products] = useState(initialProducts);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || null);
+  const [toast, setToast] = useState({ show: false, message: '', id: 0 });
+
   // Cart State
   const [cartCount, setCartCount] = useState(0);
 
@@ -37,11 +44,11 @@ export default function ProductFeed({ initialProducts, user }) {
 
   // 2. Add to Cart Function
   function addToCart(e, product) {
-    e.preventDefault(); 
+    e.preventDefault();
     e.stopPropagation();
 
     if (typeof window === "undefined") return;
-    
+
     const existing = JSON.parse(localStorage.getItem("cart") || "[]");
     const index = existing.findIndex((item) => item.id === product.id);
 
@@ -55,83 +62,91 @@ export default function ProductFeed({ initialProducts, user }) {
 
     localStorage.setItem("cart", JSON.stringify(next));
     updateCartState(next);
+    setToast({ show: true, message: "Added to Cart", id: Date.now() });
   }
 
-  return ( 
+  return (
     <div className="page-wrapper">
-   
+      <Toast
+        message={toast.message}
+        isVisible={toast.show}
+        id={toast.id}
+        onClose={() => setToast(prev => ({ ...prev, show: false }))}
+      />
 
       <main className="main-layout">
-      <TopNav
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onSelectCategory={(cat) => setSelectedCategory(cat === selectedCategory ? null : cat)}
-        cartCount={cartCount}
-        user={user}
-      />
-        {/* TOP RATED CAROUSEL */}
-        <TopRatedCarousel products={products} />
-        
+        <TopNav
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={(cat) => setSelectedCategory(cat === selectedCategory ? null : cat)}
+          cartCount={cartCount}
+          user={user}
+        />
+
+        {/* CAROUSEL TOP (Only for All Collection) */}
+        {!selectedCategory && <TopRatedCarousel products={products} />}
+
         {/* PRODUCT GRID SECTION */}
         <section className="products-section">
           <div className="section-header">
             <div>
-              <h2>{selectedCategory ? selectedCategory : "All Products"}</h2>
-           
+              <h2 className="logo-golden-wave">{selectedCategory ? selectedCategory : "The Collection"}</h2>
+              <div className="header-line"></div>
             </div>
             <span className="count-pill">
-              {visibleProducts.length} items
+              {visibleProducts.length} ITEMS
             </span>
           </div>
-          
+
           <div className="product-grid">
-            {visibleProducts.map((product) => (
-              <Link 
-                href={`/products/${product.id}`} 
+            {visibleProducts.map((product, index) => (
+              <Link
+                href={`/products/${product.id}`}
                 key={product.id}
-                className="card-link"
+                className="card-link animate-in"
+                style={{ animationDelay: `${index * 50}ms` }}
               >
-                <article className="glass-tile">
-                  
+                <article className="glass-panel" style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+
                   {/* Image Area */}
                   <div className="tile-media">
                     <img src={product.image} alt={product.name} />
-                    
+
                     {/* Floating Badges */}
                     <div className="badges-overlay">
-                      <span className="category-badge">{product.category}</span>
+
                       {product.stock !== undefined && product.stock < 10 && (
                         <span className="stock-badge">Low Stock</span>
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Content Area */}
                   <div className="tile-content">
                     <div className="tile-top">
                       <div className="name-row">
                         <h3>{product.name}</h3>
+                      </div>
+                      <div className="rating-row">
                         <div className="rating">
-                          <Star size={14} fill="#fbbf24" stroke="none" />
+                          <Star size={15} fill="#c4a775" stroke="none" />
                           <span>{product.rating}</span>
                         </div>
+                      </div>
+                      <div className="price-container">
+                        <span className="amount">PKR {Number(product.price).toLocaleString()}</span>
                       </div>
                     </div>
 
                     <div className="tile-footer">
-                      <div className="price-container">
-                        <span className="currency">PKR</span>
-                        <span className="amount">{Number(product.price).toLocaleString()}</span>
-                      </div>
-                      
-                      <div className="action-wrapper">
+                      <div className="action-wrapper" style={{ width: '100%' }}>
                         <WaterButton
-                          variant="primary"
-                          className="compact-btn"
+                          variant="ghost"
+                          className="luxury-add-btn"
                           onClick={(e) => addToCart(e, product)}
                         >
-                          <ShoppingBag size={16} />
-                          <span className="btn-text">Add</span>
+                          <ShoppingBag size={12} />
+                          <span className="btn-text">CART</span>
                         </WaterButton>
                       </div>
                     </div>
@@ -141,102 +156,105 @@ export default function ProductFeed({ initialProducts, user }) {
             ))}
           </div>
         </section>
+
+        {/* CAROUSEL BOTTOM (Only for Specific Categories) */}
+        {selectedCategory && (
+          <div style={{ marginTop: '60px' }}>
+            <div className="section-header" style={{ marginBottom: '20px' }}>
+              <div>
+                <h2 style={{ fontSize: '1.4rem' }}>You Might Also Like</h2>
+                <div className="header-line"></div>
+              </div>
+            </div>
+            <TopRatedCarousel products={products} />
+          </div>
+        )}
       </main>
 
-      {/* ✅ FIXED: Using safe CSS injection */}
-      <style dangerouslySetInnerHTML={{__html: `
+      {/*  LUXURY THEME CSS INJECTION */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* --- Page Layout --- */
         .page-wrapper {
           min-height: 100vh;
-          background: #020617; /* Very Dark Slate (Almost Black) */
-          color: white;
-          position: relative;
-          overflow-x: hidden;
+          background: #0e0e0e; 
+          color: #e2e8f0;
+          padding: 0 1%; /* Reduced from 3% */
         }
 
         .main-layout {
-          max-width: 85%;
-          margin: 30px auto;
-        
+          max-width: 98%; /* Wider layout for 5 cols */
+          margin: 0 auto;
+          padding: 0 12px 64px; /* Reduced side padding */
         }
 
         /* --- Section Header --- */
         .products-section {
-          margin-top: 50px;
+          margin-top: 40px; /* Reduced top margin slightly */
         }
 
         .section-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
-          margin-bottom: 32px;
-          padding: 0 8px;
+          margin-bottom: 30px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          padding-bottom: 15px;
         }
 
         .section-header h2 {
-          font-size: 2rem;
+          font-family: var(--font, sans-serif);
+          font-size: 1.8rem;
           color: white;
           margin: 0;
           font-weight: 700;
-          letter-spacing: -0.5px;
-          text-transform: capitalize;
+          letter-spacing: 2px;
+          text-transform: uppercase;
         }
-
-        .section-subtitle {
-          color: #94a3b8;
-          margin: 4px 0 0 0;
-          font-size: 0.95rem;
-          font-weight: 500;
+        
+        /* Gold Underline for Title */
+        .header-line {
+          width: 50px;
+          height: 2px;
+          background: #c4a775;
+          margin-top: 10px;
         }
 
         .count-pill {
-          background: rgba(255, 255, 255, 0.1);
-          color: #cbd5e1;
-          padding: 6px 14px;
-          border-radius: 20px;
-          font-size: 0.85rem;
-          backdrop-filter: blur(10px);
+          color: #64748b;
+          font-size: 0.75rem;
+          letter-spacing: 1px;
+          font-weight: 600;
+          text-transform: uppercase;
         }
 
-        /* --- Grid Layout --- */
+        /* --- Grid Layout (5 Columns) --- */
         .product-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-          gap: 24px;
+          /* UPDATED: Min 220px allows approx 5 items on typical 1400px+ screens */
+          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+          gap: 20px;
         }
 
-        /* --- The Glass Tile --- */
+        /* --- The Luxury Card --- */
         .card-link {
           text-decoration: none;
           color: inherit;
           display: block;
         }
 
-        .glass-tile {
-          background: rgba(30, 41, 59, 0.4); /* Deep transparent blue */
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 24px;
-          overflow: hidden;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          position: relative;
-        }
-
-        .glass-tile:hover {
-          transform: translateY(-6px);
-          background: rgba(30, 41, 59, 0.6);
-          border-color: rgba(255, 255, 255, 0.15);
-          box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+        .glass-panel:hover {
+          transform: translateY(-5px);
+          border-color: #c4a775; 
+          background: rgba(255, 255, 255, 0.04);
+          box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+          transition: all 0.4s ease;
         }
 
         /* --- Image Area --- */
         .tile-media {
           position: relative;
-          aspect-ratio: 4 / 3;
+          aspect-ratio: 1 / 1; 
           overflow: hidden;
           background: #000;
         }
@@ -245,77 +263,76 @@ export default function ProductFeed({ initialProducts, user }) {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.6s ease;
+          transition: transform 0.8s ease;
+          opacity: 0.9;
         }
 
-        .glass-tile:hover .tile-media img {
-          transform: scale(1.08);
+        .glass-panel:hover .tile-media img {
+          transform: scale(1.05);
+          opacity: 1;
         }
 
         .badges-overlay {
           position: absolute;
-          top: 12px;
-          left: 12px;
+          top: 0;
+          left: 0;
           display: flex;
-          gap: 6px;
+          flex-direction: column;
+          gap: 0;
         }
 
-        .category-badge {
-          background: rgba(0, 0, 0, 0.6);
-          backdrop-filter: blur(4px);
-          color: white;
-          font-size: 0.7rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          padding: 4px 10px;
-          border-radius: 20px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+
 
         .stock-badge {
-          background: rgba(239, 68, 68, 0.8);
+          background: #7f1d1d; 
           color: white;
-          font-size: 0.7rem;
+          font-size: 0.6rem;
           font-weight: 700;
-          padding: 4px 8px;
-          border-radius: 20px;
+          padding: 6px 10px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         /* --- Content Area --- */
         .tile-content {
-          padding: 20px;
+          padding: 16px;
           display: flex;
           flex-direction: column;
           flex: 1;
           justify-content: space-between;
-          gap: 16px;
-        }
-
-        .name-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 10px;
+          gap: 12px;
+          background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.2));
         }
 
         .tile-top h3 {
-          font-size: 1.1rem;
+          font-family: var(--font, sans-serif);
+          font-size: 0.85rem;
           font-weight: 600;
-          color: rgba(255, 255, 255, 0.95);
-          margin: 0;
+          color: #fff;
+          margin: 0 0 6px 0;
           line-height: 1.4;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          
+          /* Clamp text to 2 lines */
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        .rating-row {
+          margin-bottom: 4px;
         }
 
         .rating {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           gap: 4px;
-          background: rgba(255, 255, 255, 0.05);
-          padding: 4px 8px;
-          border-radius: 8px;
-          font-size: 0.8rem;
-          color: #e2e8f0;
-          font-weight: 500;
+          color: #ced4dbff;
+          font-size: 0.9rem;
+          font-family: var(--font-serif, serif);
+          font-style: italic;
         }
 
         /* --- Footer (Price & Button) --- */
@@ -323,54 +340,74 @@ export default function ProductFeed({ initialProducts, user }) {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-top: 16px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .price-container {
-          display: flex;
-          flex-direction: column;
-          line-height: 1;
-        }
-
-        .price-container .currency {
-          font-size: 0.7rem;
-          color: #94a3b8;
-          font-weight: 600;
-          margin-bottom: 4px;
+          padding-top: 12px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .price-container .amount {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #fff;
+          font-family: var(--font, sans-serif); /* Changed to sans-serif */
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: #c4a775; 
           letter-spacing: 0.5px;
+          white-space: nowrap; /* Prevent price wrapping */
         }
 
-        .action-wrapper {
-          transform: translateY(0);
-          transition: transform 0.2s;
+        /* Compact Button */
+        .luxury-add-btn {
+          border: 1px solid rgba(255,255,255,0.2);
+          border-radius: 0 !important; 
+          padding: 8px 12px;
+          color: #fff;
+          font-size: 0.75rem;
+          letter-spacing: 2px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          width: 100%;
+          transition: all 0.3s ease;
+          background: transparent;
         }
-
-        /* Small interaction: button nudges up slightly on hover */
-        .glass-tile:hover .action-wrapper {
-          transform: scale(1.05);
-        }
-
-        .btn-text {
-          font-size: 0.85rem;
-          font-weight: 600;
+        
+        .glass-panel:hover .luxury-add-btn {
+          background: #c4a775;
+          color: #000;
+          border-color: #c4a775;
         }
 
         /* --- Mobile Adjustments --- */
+        @media (max-width: 900px) {
+          .product-grid {
+            /* Fallback to 3 cols on tablet */
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+          }
+        }
+        
         @media (max-width: 600px) {
           .product-grid {
-            grid-template-columns: 1fr; /* Single column on very small screens */
-            gap: 20px;
+            /* 2 cols on standard mobile */
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px;
           }
           
           .section-header h2 {
-            font-size: 1.5rem;
+            font-size: 1.2rem; /* Reduced for mobile */
+          }
+
+          .count-pill {
+             font-size: 0.6rem;
+          }
+
+          .main-layout {
+            padding: 0 16px 40px;
+          }
+        }
+
+        /* Essential for small devices (iPhone SE, etc) */
+        @media (max-width: 370px) {
+          .product-grid {
+            grid-template-columns: 1fr; /* Force 1 column on tiny screens */
           }
         }
       `}} />

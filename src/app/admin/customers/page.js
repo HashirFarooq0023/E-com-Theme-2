@@ -47,31 +47,30 @@ export default function AdminCustomersPage() {
   };
 
   if (!user && loading) return null;
-
   return (
-    <div className="page">
+    <div className="page-wrapper">
       <TopNav categories={[]} user={user} />
 
-      <div className="container">
+      <div className="main-container">
         
         {/* HEADER */}
         <div className="header-section">
           <div>
-            <h1>Customers</h1>
-            <p className="subtitle">View and search your registered users.</p>
+            <h1>CLIENT DIRECTORY</h1>
+            <div className="header-line"></div>
           </div>
           <div className="total-badge">
-            <Users size={16} />
-            {customers.length} Total Users
+            <Users size={14} color="#c4a775" />
+            {customers.length} REGISTERED
           </div>
         </div>
 
         {/* SEARCH BAR */}
         <div className="search-wrapper">
-          <Search size={18} className="search-icon" />
+          <Search size={16} className="search-icon" color="#c4a775" />
           <input 
             type="text" 
-            placeholder="Search by name, email, or phone..." 
+            placeholder="SEARCH BY NAME, EMAIL, OR PHONE..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -81,25 +80,25 @@ export default function AdminCustomersPage() {
         <div className="table-panel">
           {loading ? (
             <div className="loading-state">
-              <Loader2 className="spin" size={32} color="#3b82f6" />
-              <p>Loading customers...</p>
+              <Loader2 className="spin" size={32} color="#c4a775" />
+              <p>LOADING CLIENTS...</p>
             </div>
           ) : filteredCustomers.length === 0 ? (
             <div className="empty-state">
-              <Users size={48} />
-              <p>No customers found.</p>
+              <Users size={48} color="#c4a775" />
+              <p>NO CLIENTS FOUND.</p>
             </div>
           ) : (
             <div style={{overflowX: 'auto'}}>
               <table className="custom-table">
                 <thead>
                   <tr>
-                    <th>Customer</th>
-                    <th>Contact Info</th>
-                    <th>Location</th>
-                    <th>Joined</th>
-                    <th style={{textAlign: 'center'}}>Orders</th>
-                    <th style={{textAlign: 'right'}}>Total Spent</th>
+                    <th>CUSTOMER</th>
+                    <th>CONTACT INFO</th>
+                    <th>LOCATION</th>
+                    <th>JOINED</th>
+                    <th style={{textAlign: 'center'}}>ORDERS</th>
+                    <th style={{textAlign: 'right'}}>TOTAL SPENT</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -111,7 +110,7 @@ export default function AdminCustomersPage() {
                           <div className="avatar-placeholder">
                             {customer.name ? customer.name.charAt(0).toUpperCase() : "U"}
                           </div>
-                          <span className="user-name">{customer.name || "Guest"}</span>
+                          <span className="user-name">{customer.name || "GUEST"}</span>
                         </div>
                       </td>
 
@@ -119,11 +118,11 @@ export default function AdminCustomersPage() {
                       <td>
                         <div className="contact-col">
                           <div className="icon-text">
-                            <Mail size={14} /> {customer.email}
+                            <Mail size={12} color="#c4a775" /> {customer.email}
                           </div>
                           {customer.phone && (
                             <div className="icon-text sub-text">
-                              <Phone size={14} /> {customer.phone}
+                              <Phone size={12} color="#c4a775" /> {customer.phone}
                             </div>
                           )}
                         </div>
@@ -133,7 +132,7 @@ export default function AdminCustomersPage() {
                       <td>
                         {customer.city ? (
                           <div className="icon-text">
-                            <MapPin size={14} /> 
+                            <MapPin size={12} color="#c4a775" /> 
                             {customer.city}, {customer.province}
                           </div>
                         ) : (
@@ -144,7 +143,7 @@ export default function AdminCustomersPage() {
                       {/* Joined Date */}
                       <td>
                         <div className="icon-text">
-                          <Calendar size={14} /> {formatDate(customer.created_at)}
+                          <Calendar size={12} color="#c4a775" /> {formatDate(customer.created_at)}
                         </div>
                       </td>
 
@@ -156,8 +155,8 @@ export default function AdminCustomersPage() {
                       </td>
 
                       {/* Stats: Spent */}
-                      <td style={{textAlign: 'right', fontWeight: 600, color: '#22c55e'}}>
-                        PKR {Number(customer.total_spent).toFixed(2)}
+                      <td className="spent-col">
+                        PKR {Number(customer.total_spent).toLocaleString()}
                       </td>
                     </tr>
                   ))}
@@ -169,138 +168,205 @@ export default function AdminCustomersPage() {
       </div>
 
       <style dangerouslySetInnerHTML={{__html: `
-        .container {
-          max-width: 1100px;
-          margin: 0 auto;
-          padding: 30px 20px;
+        /* --- Layout --- */
+       .page-wrapper { 
+          background: transparent; 
+          color: #e2e8f0; 
+          min-height: 100vh; 
+          padding: 0 5%;
+          width: 100%; 
+          font-family: var(--font-serif, serif); 
         }
 
-        .header-section {
+        .main-container { 
+          max-width: 1400px; 
+          margin: 0 auto; 
+          padding: 40px 24px 80px; 
+        }
+
+        /* --- Header --- */
+        .header-section { 
+          display: flex; 
+          justify-content: space-between; 
+          align-items: flex-end; 
+          margin-bottom: 40px; 
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          padding-bottom: 20px;
+        }
+
+        h1 { 
+          font-family: var(--font, sans-serif);
+          margin: 0; 
+          font-size: 2rem; 
+          font-weight: 700;
+          letter-spacing: 2px;
+          color: white;
+        }
+        
+        .header-line {
+          width: 60px;
+          height: 2px;
+          background: #c4a775;
+          margin-top: 15px;
+        }
+
+        .total-badge { 
           display: flex;
-          justify-content: space-between;
           align-items: center;
-          margin-bottom: 24px;
-        }
-        h1 { margin: 0; font-size: 1.8rem; }
-        .subtitle { color: #94a3b8; margin: 4px 0 0 0; }
-
-        .total-badge {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(59, 130, 246, 0.1);
-          color: #3b82f6;
-          padding: 8px 16px;
-          border-radius: 20px;
-          border: 1px solid rgba(59, 130, 246, 0.2);
-          font-weight: 600;
-          font-size: 0.9rem;
+          gap: 10px;
+          background: transparent; 
+          color: #c4a775; 
+          padding: 8px 16px; 
+          border: 1px solid #c4a775; 
+          font-weight: 600; 
+          font-size: 0.75rem;
+          letter-spacing: 1px;
+          font-family: var(--font, sans-serif);
         }
 
-        /* SEARCH */
+        /* --- SEARCH --- */
         .search-wrapper {
           position: relative;
-          margin-bottom: 20px;
+          margin-bottom: 40px;
         }
         .search-icon {
           position: absolute;
           left: 16px;
           top: 50%;
           transform: translateY(-50%);
-          color: #64748b;
         }
         .search-wrapper input {
           width: 100%;
-          padding: 12px 12px 12px 44px;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          padding: 14px 14px 14px 44px;
+          background: #000;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0; /* Square edges */
           color: white;
           outline: none;
-          font-size: 1rem;
+          font-size: 0.85rem;
+          font-family: var(--font, sans-serif);
+          letter-spacing: 1px;
+          transition: all 0.3s ease;
         }
         .search-wrapper input:focus {
-          border-color: #3b82f6;
-          background: rgba(255, 255, 255, 0.08);
+          border-color: #c4a775;
+          background: rgba(196, 167, 117, 0.02);
         }
 
-        /* TABLE */
+        /* --- TABLE --- */
         .table-panel {
           background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 0;
           overflow: hidden;
         }
+        
         .custom-table {
           width: 100%;
           border-collapse: collapse;
         }
+        
         .custom-table th {
           text-align: left;
-          padding: 16px;
-          background: rgba(255, 255, 255, 0.03);
-          color: #94a3b8;
+          padding: 20px 24px;
+          background: #111;
+          color: #c4a775;
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 0.75rem;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+          font-family: var(--font, sans-serif);
         }
+        
         .custom-table td {
-          padding: 16px;
+          padding: 20px 24px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.05);
           color: #e2e8f0;
-          font-size: 0.9rem;
+          font-size: 0.85rem;
         }
+        
         .custom-table tr:hover {
-          background: rgba(255, 255, 255, 0.03);
+          background: rgba(196, 167, 117, 0.05);
         }
 
-        .user-cell { display: flex; align-items: center; gap: 12px; }
+        .user-cell { display: flex; align-items: center; gap: 16px; }
+        
+        /* Square Avatar for Luxury Theme */
         .avatar-placeholder {
           width: 36px; 
           height: 36px;
-          background: #3b82f6;
-          color: white;
-          border-radius: 50%;
+          background: transparent;
+          color: #c4a775;
+          border: 1px solid #c4a775;
+          border-radius: 0; /* Square */
           display: flex; 
           align-items: center; 
           justify-content: center;
-          font-weight: bold;
+          font-weight: 600;
           font-size: 0.9rem;
+          font-family: var(--font, sans-serif);
         }
-        .user-name { font-weight: 500; }
+        
+        .user-name { 
+          font-weight: 600; 
+          color: #fff; 
+          letter-spacing: 0.5px; 
+          text-transform: uppercase; 
+          font-family: var(--font, sans-serif);
+        }
         
         .icon-text {
           display: flex;
           align-items: center;
-          gap: 8px;
-          color: #cbd5e1;
+          gap: 10px;
+          color: #ccc;
+          font-family: var(--font-serif, serif);
         }
         .sub-text {
-          margin-top: 4px;
-          color: #94a3b8;
-          font-size: 0.85rem;
+          margin-top: 6px;
+          color: #888;
+          font-size: 0.8rem;
         }
-        .no-data { color: #64748b; font-style: italic; }
+        .no-data { color: #555; font-style: italic; }
 
         .badge {
           display: inline-block;
-          padding: 2px 10px;
-          border-radius: 12px;
-          background: rgba(255,255,255,0.1);
-          color: #94a3b8;
-          font-size: 0.85rem;
+          padding: 4px 12px;
+          border-radius: 0;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: #888;
+          font-size: 0.75rem;
           font-weight: 600;
+          font-family: var(--font, sans-serif);
         }
         .badge.active {
-          background: rgba(59, 130, 246, 0.15);
-          color: #3b82f6;
+          background: transparent;
+          color: #c4a775;
+          border-color: #c4a775;
         }
 
+        .spent-col {
+          text-align: right;
+          font-weight: 500;
+          color: #c4a775 !important;
+          font-family: var(--font-serif, serif);
+          font-size: 1rem !important;
+          letter-spacing: 0.5px;
+        }
+
+        /* --- States --- */
         .loading-state, .empty-state {
           text-align: center;
-          padding: 60px;
-          color: #64748b;
+          padding: 80px;
+          color: #c4a775;
+          font-size: 0.8rem;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          font-family: var(--font, sans-serif);
         }
-        .spin { animation: spin 1s linear infinite; }
+        .spin { animation: spin 2s linear infinite; margin-bottom: 16px; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
       `}} />
     </div>

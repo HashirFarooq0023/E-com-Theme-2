@@ -18,7 +18,7 @@ export default function TopRatedCarousel({ products = [] }) {
 
     intervalRef.current = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % topRatedProducts.length);
-    }, 3000); // Rotate every 3 seconds
+    }, 4000); // Rotate every 4 seconds
 
     return () => {
       if (intervalRef.current) {
@@ -54,8 +54,7 @@ export default function TopRatedCarousel({ products = [] }) {
     <div className="top-rated-carousel">
       <div className="carousel-header">
         <div>
-          <h2>Top Rated Products</h2>
-
+          <h2>Top Rated Collection</h2>
         </div>
         <div className="carousel-indicators">
           {topRatedProducts.map((_, idx) => (
@@ -70,8 +69,8 @@ export default function TopRatedCarousel({ products = [] }) {
       </div>
 
       <div className="carousel-container">
-        <button 
-          className="carousel-nav prev" 
+        <button
+          className="carousel-nav prev"
           onClick={goToPrev}
           aria-label="Previous slide"
         >
@@ -83,28 +82,28 @@ export default function TopRatedCarousel({ products = [] }) {
         }}>
           {topRatedProducts.map((product, idx) => (
             <div key={product.id} className="carousel-slide">
-              <Link 
+              <Link
                 href={`/products/${product.id}`}
                 className="product-tile"
               >
                 <div className="tile-image">
                   <img src={product.image} alt={product.name} />
                   <div className="rating-badge">
-                    <Star size={20} fill="#facc15" color="#facc15" />
-                    <span>5.0</span>
+                    <Star size={11} fill="#000" color="#000" />
+                    <span>{Number(product.rating || 0).toFixed(1)}</span>
                   </div>
                 </div>
-                
+
                 <div className="tile-content">
                   <span className="tile-category">{product.category}</span>
                   <h3>{product.name}</h3>
                   <p className="tile-description">
-                    {product.description ? product.description.substring(0, 80) + "..." : "Premium quality product"}
+                    {product.description ? product.description.substring(0, 120) + "..." : "Experience the epitome of luxury and performance."}
                   </p>
                   <div className="tile-footer">
-                    <span className="tile-price">PKR {Number(product.price).toFixed(2)}</span>
+                    <span className="tile-price">PKR {Number(product.price).toLocaleString()}</span>
                     {product.stock !== undefined && product.stock < 10 && (
-                      <span className="stock-badge">Only {product.stock} left</span>
+                      <span className="stock-badge">Limited Edition</span>
                     )}
                   </div>
                 </div>
@@ -113,8 +112,8 @@ export default function TopRatedCarousel({ products = [] }) {
           ))}
         </div>
 
-        <button 
-          className="carousel-nav next" 
+        <button
+          className="carousel-nav next"
           onClick={goToNext}
           aria-label="Next slide"
         >
@@ -122,126 +121,130 @@ export default function TopRatedCarousel({ products = [] }) {
         </button>
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .top-rated-carousel {
           width: 100%;
-          margin: 40px 0;
-          padding: 0 20px;
+          margin: 0;
+          padding: 15px 0;
+          background: #080808; 
+          color: white;
+          font-family: var(--font, sans-serif); 
         }
 
+        /* --- Header Section --- */
         .carousel-header {
+          max-width: 1200px;
+          margin: 0 auto 20px;
+          padding: 0 20px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 24px;
-          flex-wrap: wrap;
-          gap: 16px;
         }
 
         .carousel-header h2 {
-          font-size: 1.8rem;
-          margin: 0 0 4px 0;
-          color: white;
-          font-weight: 700;
-        }
-
-        .carousel-header p {
-          color: #94a3b8;
+          font-family: var(--font-serif, serif); /* Use global Playfair */
+          font-size: 2.2rem;
+          color: c4a775; /* Gold */
+          letter-spacing: 1px;
           margin: 0;
-          font-size: 0.95rem;
+          text-transform: uppercase;
         }
 
         .carousel-indicators {
           display: flex;
-          gap: 8px;
+          gap: 12px;
         }
 
         .carousel-indicators .indicator {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          border: none;
+          width: 40px;
+          height: 3px;
+          border-radius: 0;
           background: rgba(255, 255, 255, 0.2);
+          border: none;
           cursor: pointer;
-          transition: all 0.3s ease;
-          padding: 0;
+          transition: all 0.4s ease;
         }
 
         .carousel-indicators .indicator.active {
-          background: #3b82f6;
-          width: 24px;
-          border-radius: 5px;
+          background: #c4a775;
+          width: 60px;
         }
 
-        .carousel-indicators .indicator:hover {
-          background: rgba(255, 255, 255, 0.4);
-        }
-
+        /* --- Carousel Structure --- */
         .carousel-container {
           position: relative;
+          max-width: 1920px;
+          margin: 0 auto;
           overflow: hidden;
-          border-radius: 20px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 0;
+          background: transparent;
+          border: none;
         }
 
         .carousel-track {
           display: flex;
-          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-          will-change: transform;
+          transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .carousel-slide {
           min-width: 100%;
-          flex-shrink: 0;
+          padding: 0 20px;
         }
 
+        /* --- Product Card (Hero Style) --- */
         .product-tile {
           display: grid;
-          grid-template-columns: 300px 1fr;
-          gap: 32px;
-          padding: 32px;
+          grid-template-columns: 1fr 1.2fr; /* Layout: Image left, Text right */
+          gap: 20px;
+          padding: 25px;
           text-decoration: none;
           color: inherit;
-          transition: background 0.3s ease;
+          align-items: center;
+          min-height: 500px;
         }
 
-        .product-tile:hover {
-          background: rgba(255, 255, 255, 0.02);
-        }
-
+        /* --- Image Styling --- */
         .tile-image {
           position: relative;
           width: 100%;
-          aspect-ratio: 1;
-          border-radius: 16px;
-          overflow: hidden;
-          background: #000;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          aspect-ratio: 1; /* Square for watch-like focus */
+          border-radius: 0;
+          background: transparent;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .tile-image img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
+          filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+          transition: transform 0.5s ease;
+        }
+
+        .product-tile:hover .tile-image img {
+          transform: scale(1.05);
         }
 
         .rating-badge {
           position: absolute;
-          top: 12px;
-          right: 12px;
-          background: rgba(0, 0, 0, 0.7);
-          backdrop-filter: blur(10px);
-          padding: 8px 12px;
-          border-radius: 20px;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          color:rgb(199, 164, 22);
-          font-weight: 600;
+          top: 0; left: 0;
+          background: #b88b3dff; /* Gold Badge */
+          color: #000;
+          padding: 6px 6px;
+          border-radius: 0;
+          font-family: var(--font, sans-serif);
+          font-weight: 500;
+          text-transform: uppercase;
           font-size: 0.9rem;
+          letter-spacing: 1px;
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
         }
 
+        /* --- Content Styling --- */
         .tile-content {
           display: flex;
           flex-direction: column;
@@ -249,63 +252,72 @@ export default function TopRatedCarousel({ products = [] }) {
         }
 
         .tile-category {
-          display: inline-block;
-          background: rgba(59, 130, 246, 0.1);
-          color: #3b82f6;
-          padding: 4px 12px;
-          border-radius: 20px;
-          font-size: 0.8rem;
-          font-weight: 600;
-          margin-bottom: 12px;
-          width: fit-content;
+          color: #c4a775;
+          font-size: 0.9rem;
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          margin-bottom: 20px;
+          background: transparent;
+          padding: 0;
+          width: auto;
+          font-weight: 700;
         }
 
         .tile-content h3 {
-          font-size: 2rem;
-          margin: 0 0 12px 0;
+          font-family: var(--font-serif, serif);
+          font-size: 3.5rem;
+          line-height: 1.1;
+          margin: 0 0 24px 0;
           color: white;
-          font-weight: 700;
-          line-height: 1.2;
+          font-weight: 400;
         }
 
         .tile-description {
-          color: #94a3b8;
-          line-height: 1.6;
-          margin: 0 0 20px 0;
-          font-size: 1rem;
+          font-size: 1.1rem;
+          line-height: 1.8;
+          color: #a3a3a3;
+          margin-bottom: 30px;
+          font-weight: 300;
+          max-width: 90%;
         }
 
+        /* --- Footer & Price --- */
         .tile-footer {
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 24px;
+          border-top: 1px solid rgba(255,255,255,0.1);
+          padding-top: 30px;
         }
 
         .tile-price {
-          font-size: 2rem;
-          font-weight: 700;
-          color: #22c55e;
+          font-family: var(--font-serif, serif);
+          font-size: 2.2rem;
+          color: #fff;
+          font-weight: 400;
         }
 
         .stock-badge {
-          background: rgba(248, 113, 113, 0.1);
-          color: #f87171;
-          padding: 6px 12px;
-          border-radius: 8px;
-          font-size: 0.85rem;
-          font-weight: 600;
+          background: transparent;
+          color: #c4a775;
+          border: 1px solid #c4a775;
+          padding: 8px 16px;
+          border-radius: 0;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 2px;
         }
 
+        /* --- Navigation Buttons --- */
         .carousel-nav {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
+          background: transparent;
           border: 1px solid rgba(255, 255, 255, 0.2);
-          color: white;
-          width: 48px;
-          height: 48px;
+          color: #c4a775;
+          width: 50px;
+          height: 50px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -313,51 +325,81 @@ export default function TopRatedCarousel({ products = [] }) {
           font-size: 24px;
           cursor: pointer;
           transition: all 0.3s ease;
-          z-index: 10;
+          z-index: 20;
         }
 
         .carousel-nav:hover {
-          background: rgba(255, 255, 255, 0.2);
-          transform: translateY(-50%) scale(1.1);
+          background: #c4a775;
+          color: black;
+          border-color: #c4a775;
         }
 
-        .carousel-nav.prev {
-          left: 16px;
-        }
+        .carousel-nav.prev { left: 10px; }
+        .carousel-nav.next { right: 10px; }
 
-        .carousel-nav.next {
-          right: 16px;
-        }
-
-        @media (max-width: 768px) {
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 900px) {
           .product-tile {
             grid-template-columns: 1fr;
+            text-align: center;
             gap: 20px;
-            padding: 24px;
+            padding: 15px;
+            min-height: auto; /* Allow height to shrink */
+          }
+
+          .tile-image {
+            max-width: 200px; /* Smaller image */
+            margin: 0 auto;
+            aspect-ratio: 16/9; /* Widescreen aspect for mobile if landscape, but square is safer. Let's stick to square but smaller. */
+            aspect-ratio: 1;
           }
 
           .tile-content h3 {
-            font-size: 1.5rem;
+            font-size: 1.5rem; /* Smaller product title */
+            margin-bottom: 10px;
           }
 
+          .tile-description {
+            display: none; /* Hidden on mobile per request */
+          }
+
+          .tile-footer {
+            justify-content: center;
+            padding-top: 15px;
+            gap: 15px;
+          }
+          
           .tile-price {
             font-size: 1.5rem;
           }
 
-          .carousel-nav {
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
+          .carousel-header {
+            flex-direction: column;
+            text-align: center;
+            margin-bottom: 20px;
           }
-
-          .carousel-nav.prev {
-            left: 8px;
-          }
-
-          .carousel-nav.next {
-            right: 8px;
+          
+          .carousel-header h2 {
+            font-size: 1.5rem; /* Much smaller header */
           }
         }
+
+        @media (max-width: 480px) {
+          /* Further reduction for small phones */
+          .product-tile {
+            padding: 10px 0;
+          }
+          .tile-image {
+            max-width: 160px;
+          }
+           .carousel-header h2 {
+            font-size: 1.2rem;
+          }
+          .tile-content h3 {
+             font-size: 1.2rem;
+          }
+        }
+
       `}} />
     </div>
   );

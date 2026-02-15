@@ -15,13 +15,13 @@ require('dotenv').config({ path: '.env.local' });
     console.log("🔵 Connected to database. Preparing to add users...");
 
     // --- USER 1: Standard User ---
-    const userEmail = 'user@gmail.com';
-    const userPass = 'user1122';
+    const userEmail = process.env.SEED_USER_EMAIL || 'user@gmail.com';
+    const userPass = process.env.SEED_USER_PASSWORD || 'user1122';
     const userHash = await bcrypt.hash(userPass, 10);
 
     // --- USER 2: Admin User ---
-    const adminEmail = 'admin@gmail.com';
-    const adminPass = 'admin1122';
+    const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@gmail.com';
+    const adminPass = process.env.SEED_ADMIN_PASSWORD || 'admin1122';
     const adminHash = await bcrypt.hash(adminPass, 10);
 
     // SQL Query

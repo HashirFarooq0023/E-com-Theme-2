@@ -3,24 +3,30 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"npm run next-dev\" \"npm run python-dev\"",
+    "next-dev": "next dev",
+    "python-dev": "cd ai-service && set PYTHONIOENCODING=utf-8 && python main.py",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "setup": "node scripts/setup.js && node scripts/seed_users.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
+    "framer-motion": "^12.34.0",
     "jose": "^6.1.3",
     "lucide-react": "^0.561.0",
     "mysql2": "^3.16.0",
     "next": "16.0.10",
     "react": "19.2.1",
-    "react-dom": "19.2.1"
+    "react-dom": "19.2.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "babel-plugin-react-compiler": "1.0.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
     "tailwindcss": "^4"

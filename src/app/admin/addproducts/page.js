@@ -168,14 +168,14 @@ export default function AddProductPage() {
   // 3. RENDER LOADER WHILE CHECKING
   if (checkingAuth) {
     return (
-      <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <Loader2 className="spin" size={40} color="#3b82f6" />
+      <div className="page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0e0e0e' }}>
+        <Loader2 className="spin" size={40} color="#c4a775" />
       </div>
     );
   }
 
   return (
-    <div className="page">
+    <div className="page-wrapper">
       <TopNav categories={[]} user={user} /> 
 
       <div className="product-form-container">
@@ -188,7 +188,6 @@ export default function AddProductPage() {
           </Link>
           <div className="header-content">
             <h1>Add New Product</h1>
-        
           </div>
         </div>
 
@@ -207,7 +206,6 @@ export default function AddProductPage() {
                 <strong>⚠️ File Size Limits:</strong>
                 <ul>
                   <li>Maximum <strong>2MB per image</strong></li>
-         
                 </ul>
               </div>
 
@@ -264,7 +262,7 @@ export default function AddProductPage() {
               <input 
                 name="name" 
                 required 
-                placeholder="e.g. Neon Cyber Jacket" 
+                placeholder="e.g. Classic Gold Timepiece" 
                 value={formData.name} 
                 onChange={handleChange} 
               />
@@ -364,11 +362,25 @@ export default function AddProductPage() {
       </div>
 
       <style dangerouslySetInnerHTML={{__html: `
+        /* Let the wrapper span 100% of the viewport width */
+        :global(body) {
+          background-color: #0e0e0e !important; 
+        }
+
+        .page-wrapper { 
+          background: transparent; 
+          color: #e2e8f0; 
+          min-height: 100vh; 
+          padding: 0 5%;
+          width: 100%; 
+          font-family: var(--font-serif, serif); 
+        }
+
+        /* Restrict the content width like the rest of the site */
         .product-form-container {
-          max-width: 900px;
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 20px;
-          padding-bottom: 60px;
+          padding: 20px 24px 80px;
         }
 
         .form-header {
@@ -384,7 +396,7 @@ export default function AddProductPage() {
           height: 44px;
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          border-radius: 0px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -394,8 +406,9 @@ export default function AddProductPage() {
         }
 
         .back-btn:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.2);
+          background: rgba(196, 167, 117, 0.1);
+          border-color: #c4a775;
+          color: #c4a775;
         }
 
         .header-content {
@@ -409,22 +422,15 @@ export default function AddProductPage() {
           display: flex;
           align-items: center;
           gap: 12px;
-        }
-
-        .header-icon {
-          color: #3b82f6;
-        }
-
-        .subtitle {
-          color: #94a3b8;
-          margin: 0;
-          font-size: 0.95rem;
+          font-family: var(--font, sans-serif);
+          text-transform: uppercase;
+          letter-spacing: 2px;
         }
 
         .product-form-panel {
           background: rgba(255, 255, 255, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 20px;
+          border-radius: 0px; 
           padding: 32px;
           backdrop-filter: blur(10px);
         }
@@ -445,24 +451,28 @@ export default function AddProductPage() {
           align-items: center;
           margin-bottom: 16px;
           font-weight: 600;
-          color: #e2e8f0;
+          color: #c4a775; /* Gold text */
           font-size: 0.95rem;
+          font-family: var(--font, sans-serif);
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         .image-count {
           font-size: 0.85rem;
           opacity: 0.7;
           font-weight: 400;
+          color: #888;
         }
 
         .file-warning {
-          background: rgba(251, 191, 36, 0.1);
-          border: 1px solid rgba(251, 191, 36, 0.3);
-          border-radius: 12px;
+          background: rgba(196, 167, 117, 0.05);
+          border: 1px solid rgba(196, 167, 117, 0.3);
+          border-radius: 0px;
           padding: 16px;
           margin-bottom: 20px;
           font-size: 0.85rem;
-          color: #fbbf24;
+          color: #c4a775;
         }
 
         .file-warning strong {
@@ -478,7 +488,7 @@ export default function AddProductPage() {
 
         .drop-zone {
           border: 2px dashed rgba(255, 255, 255, 0.2);
-          border-radius: 16px;
+          border-radius: 0px;
           padding: 40px;
           text-align: center;
           cursor: pointer;
@@ -489,14 +499,13 @@ export default function AddProductPage() {
 
         .drop-zone:hover,
         .drop-zone.active {
-          border-color: #3b82f6;
-          background: rgba(59, 130, 246, 0.05);
+          border-color: #c4a775;
+          background: rgba(196, 167, 117, 0.05);
         }
 
         .upload-icon {
           margin: 0 auto 16px;
-          opacity: 0.5;
-          color: #94a3b8;
+          color: #c4a775;
         }
 
         .drop-zone p {
@@ -514,7 +523,7 @@ export default function AddProductPage() {
         .image-preview {
           position: relative;
           aspect-ratio: 1;
-          border-radius: 12px;
+          border-radius: 0px;
           overflow: hidden;
           border: 2px solid rgba(255, 255, 255, 0.1);
           background: #000;
@@ -533,7 +542,7 @@ export default function AddProductPage() {
           background: rgba(0, 0, 0, 0.8);
           border: none;
           color: #ff4d4d;
-          border-radius: 50%;
+          border-radius: 0%;
           width: 28px;
           height: 28px;
           cursor: pointer;
@@ -553,12 +562,13 @@ export default function AddProductPage() {
           bottom: 0;
           left: 0;
           right: 0;
-          background: rgba(0, 0, 0, 0.7);
-          color: white;
+          background: rgba(196, 167, 117, 0.8); /* Gold background */
+          color: #000;
           font-size: 10px;
           text-align: center;
           padding: 4px 0;
-          font-weight: 600;
+          font-weight: 700;
+          text-transform: uppercase;
         }
 
         .form-field {
@@ -573,35 +583,30 @@ export default function AddProductPage() {
 
         .form-field label {
           font-weight: 500;
-          color: #cbd5e1;
+          color: #c4a775;
           font-size: 0.9rem;
-        }
-
-        .hint {
-          font-size: 0.8rem;
-          opacity: 0.6;
-          font-weight: 400;
-          margin-left: 6px;
+          font-family: var(--font, sans-serif);
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         .form-field input,
         .form-field textarea {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          border-radius: 0px;
           padding: 12px 16px;
           color: white;
           font-size: 1rem;
           outline: none;
           transition: all 0.2s;
-          font-family: inherit;
+          font-family: var(--font-serif, serif);
         }
 
         .form-field input:focus,
         .form-field textarea:focus {
-          border-color: #3b82f6;
+          border-color: #c4a775;
           background: rgba(255, 255, 255, 0.08);
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .form-field input::placeholder,
@@ -628,7 +633,7 @@ export default function AddProductPage() {
         .custom-select-trigger {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          border-radius: 0px;
           padding: 12px 16px;
           color: white;
           font-size: 1rem;
@@ -638,10 +643,11 @@ export default function AddProductPage() {
           align-items: center;
           transition: all 0.2s;
           width: 100%;
+          font-family: var(--font-serif, serif);
         }
 
         .custom-select-trigger:hover {
-          border-color: #3b82f6;
+          border-color: #c4a775;
           background: rgba(255, 255, 255, 0.08);
         }
 
@@ -659,6 +665,7 @@ export default function AddProductPage() {
 
         .chevron.open {
           transform: rotate(180deg);
+          color: #c4a775;
         }
 
         .custom-options-list {
@@ -667,11 +674,13 @@ export default function AddProductPage() {
           left: 0;
           right: 0;
           background: rgba(20, 20, 25, 0.95);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          border: 1px solid rgba(196, 167, 117, 0.5); /* Gold border */
+          border-radius: 0px;
           overflow: hidden;
           z-index: 100;
           box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+          max-height: 250px;
+          overflow-y: auto;
         }
 
         .custom-option {
@@ -679,6 +688,7 @@ export default function AddProductPage() {
           color: #cbd5e1;
           cursor: pointer;
           transition: all 0.2s;
+          font-family: var(--font-serif, serif);
         }
 
         .custom-option:hover {
@@ -687,8 +697,8 @@ export default function AddProductPage() {
         }
 
         .custom-option.selected {
-          background: rgba(59, 130, 246, 0.2);
-          color: #3b82f6;
+          background: rgba(196, 167, 117, 0.1); /* Gold tint */
+          color: #c4a775;
           font-weight: 600;
         }
 

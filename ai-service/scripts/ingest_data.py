@@ -9,15 +9,15 @@ import mysql.connector
 from pathlib import Path
 from typing import List, Dict, Any
 
-from langchain_chroma import Chroma
-from langchain_ollama import OllamaEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
 # --- CONFIGURATION ---
 VECTOR_STORE_PATH = "data/vector_store"
 COLLECTION_NAME = "store_assistant"
-# We use mxbai for the DATABASE because it is better at searching than Llama3
-EMBEDDING_MODEL = "mxbai-embed-large" 
+# Lightweight CPU embedding model (Hugging Face)
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
 def get_mysql_connection():
     """Create a MySQL connection."""
@@ -130,8 +130,8 @@ def main():
     all_docs = product_docs + training_docs
     
     # 3. Initialize ChromaDB & Embeddings
-    print("🧠 Generating embeddings (this may take a moment)...")
-    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
+    print("🧠 Loading Lightweight Embeddings (CPU)...")
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
     
     # Delete old DB to avoid duplicates
     if vector_store_dir.exists():

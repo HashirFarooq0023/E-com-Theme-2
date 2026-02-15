@@ -2,20 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import TopNav from "../../components/TopNav"; 
+import TopNav from "../../components/TopNav";
 import WaterButton from "../../components/WaterButton";
 import { Loader2, Mail, Lock, User, LogOut, ArrowRight, CheckCircle } from "lucide-react";
-
+import Link from "next/link";
 export default function AuthPage() {
   const router = useRouter();
-  
+
   const [currentUser, setCurrentUser] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
 
-  const [loading, setLoading] = useState(false); 
-  const [success, setSuccess] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  
+
   const [formData, setFormData] = useState({ email: "", password: "", name: "" });
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function AuthPage() {
 
       setSuccess(true);
       setTimeout(() => { router.push("/"); router.refresh(); }, 1500);
-      
+
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -86,14 +86,23 @@ export default function AuthPage() {
   return (
     <div className="page">
       <TopNav user={currentUser} categories={[]} />
-      
+
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
+        <div className="breadcrumb-nav">
+          <Link href="/" className="back-link">
+            <ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} />
+            <span>BACK TO HOME</span>
+          </Link>
+        </div>
+      </div>
+
       <main className="auth-main">
         <section className="panel auth-panel">
-          
+
           {/* SCENARIO A: ALREADY LOGGED IN (Enhanced Card UI) */}
           {currentUser ? (
             <div className="logged-in-card">
-              
+
               {/* Top Section: Avatar + Text aligned in Row */}
               <div className="profile-header">
                 <div className="avatar-wrapper">
@@ -102,7 +111,7 @@ export default function AuthPage() {
                   </div>
                   <div className="status-dot"></div>
                 </div>
-                
+
                 <div className="profile-details">
                   <p className="welcome-label">Welcome back,</p>
                   <h2 className="user-name">{currentUser.name || "Valued User"}</h2>
@@ -114,28 +123,28 @@ export default function AuthPage() {
 
               {/* Bottom Section: Actions */}
               <div className="action-buttons">
-                <WaterButton 
-                  variant="primary" 
+                <WaterButton
+                  variant="primary"
                   onClick={() => router.push("/")}
                   className="w-full"
                   style={{ height: '50px', fontSize: '1rem' }}
                 >
-                  Continue to Store <ArrowRight size={18} style={{marginLeft: 8}}/>
+                  Continue to Store <ArrowRight size={18} style={{ marginLeft: 8 }} />
                 </WaterButton>
-                
-                <WaterButton 
-                  variant="ghost" 
+
+                <WaterButton
+                  variant="ghost"
                   onClick={handleLogout}
                   className="w-full"
                   disabled={loading}
                   style={{ color: '#ff6b6b', borderColor: 'rgba(255,107,107,0.15)', height: '44px' }}
                 >
-                  {loading ? <Loader2 className="spin" size={18} /> : <><LogOut size={18} style={{marginRight: 8}}/> Log Out</>}
+                  {loading ? <Loader2 className="spin" size={18} /> : <><LogOut size={18} style={{ marginRight: 8 }} /> Log Out</>}
                 </WaterButton>
               </div>
             </div>
           ) : (
-            
+
             /* SCENARIO B: FORM */
             <>
               {success ? (
@@ -174,7 +183,7 @@ export default function AuthPage() {
                     </div>
 
                     <div className="input-group">
-                      <label>Full Name <span style={{opacity: 0.5}}>(Optional)</span></label>
+                      <label>Full Name <span style={{ opacity: 0.5 }}>(Optional)</span></label>
                       <div className="input-wrapper">
                         <input type="text" name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} />
                       </div>
@@ -326,6 +335,8 @@ export default function AuthPage() {
           outline: none;
           transition: all 0.2s;
           font-size: 1rem;
+          font-family: var(--font, sans-serif);
+          letter-spacing: 0.5px;
         }
         .input-wrapper input:focus {
           border-color: #3b82f6;
@@ -358,6 +369,52 @@ export default function AuthPage() {
         @keyframes loadBar {
           0% { width: 0%; }
           100% { width: 100%; }
+        }
+
+        /* --- MOBILE STYLES --- */
+        @media (max-width: 600px) {
+          .auth-panel {
+            padding: 10px 20px;
+            max-width: 100%;
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            background: rgba(0,0,0,0.5); /* slightly more transparent */
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+          }
+          
+          .profile-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 15px;
+          }
+          
+          .profile-details {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .welcome-label { font-size: 0.85rem; letter-spacing: 1px; }
+          .user-name { font-size: 1.6rem; margin-bottom: 4px; }
+          .user-email { font-size: 1rem; color: #94a3b8; }
+          
+          .avatar-circle { width: 80px; height: 80px; margin: 0 auto; }
+          .avatar-circle svg { width: 32px; height: 32px; }
+          
+          .panel-header h2 { font-size: 1.8rem; }
+          .panel-header .subtitle { font-size: 1rem; }
+          
+          .input-wrapper input {
+            height: 50px;
+            font-size: 16px;
+          }
+          
+          .water-btn {
+            height: 54px !important;
+            font-size: 1rem !important;
+          }
         }
       `}</style>
     </div>

@@ -7,15 +7,15 @@ async function setupDatabase() {
 
   try {
     console.log("🔵 Connecting to MySQL...");
-    
+
     // 1. Connect to MySQL Server
     connection = await mysql.createConnection({
-      host: process.env.MYSQL_HOST || 'localhost',
-      user: process.env.MYSQL_USER || 'root',
+      host: process.env.MYSQL_HOST,
+      user: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
     });
 
-    const DB_NAME = process.env.MYSQL_DATABASE || 'ecommerce_db';
+    const DB_NAME = process.env.MYSQL_DATABASE;
 
     // 2. Create Database
     console.log(`🔵 Creating Database '${DB_NAME}' if needed...`);
@@ -111,6 +111,7 @@ async function setupDatabase() {
         id INT PRIMARY KEY, -- We only use ID 1
         brand_name VARCHAR(255) DEFAULT 'My Brand',
         brand_description TEXT,
+        logo_url TEXT,
         email_address VARCHAR(255),
         helpline_number VARCHAR(50),
         whatsapp_number VARCHAR(50),
@@ -126,8 +127,8 @@ async function setupDatabase() {
     // using INSERT IGNORE so it doesn't fail if the row already exists
     console.log("🔵 Initializing default site settings...");
     await connection.query(`
-      INSERT IGNORE INTO site_settings (id, brand_name, brand_description, email_address)
-      VALUES (1, 'My Awesome Brand', 'Quality products delivered fast.', 'support@brand.com');
+      INSERT IGNORE INTO site_settings (id, brand_name, brand_description, logo_url, email_address)
+      VALUES (1, 'My Awesome Brand', 'Quality products delivered fast.', '', 'support@brand.com');
     `);
 
     console.log("✅ SUCCESS: Database and all tables (Users, Addresses, Products, Orders, Settings) created!");

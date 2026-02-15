@@ -1,28 +1,20 @@
-
 export const routes = {
-
   // ADMIN ONLY ROUTES
-
   '/admin/products': 'admin',
   '/admin/orders': 'admin',
   '/admin/customers': 'admin',
   '/admin/addproducts': 'admin',
-
-
-  // AUTHENTICATED USER ROUTES (User Only)
-  '/': 'user',
-  '/cart': 'user',
-  '/checkout': 'user',
-  '/auth': 'user',
-  '/products': 'user',
-
-  // PUBLIC/GUEST ROUTES 
+  '/admin/dashboard': 'admin',
+  '/admin/settings': 'admin',
+  // PUBLIC ROUTES (Accessible by Guest & User)
   '/': 'guest',
   '/cart': 'guest',
   '/checkout': 'guest',
   '/auth': 'guest',
   '/products': 'guest',
 
+
+  // Note: Dynamic routes are handled by partial matching in getRequiredRole
 };
 
 /**
@@ -74,7 +66,7 @@ export function canAccess(userRole, pathname) {
     return true;
   }
 
-  // User role can access 'user' routes
+  // User role can access 'user' routes (if any existed, but now all are guest)
   if (userRole === 'user' && requiredRole === 'user') {
     return true;
   }

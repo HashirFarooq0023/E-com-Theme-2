@@ -197,8 +197,8 @@ export default function EditProductPage() {
 
   if (checkingAuth || loading) {
     return (
-      <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <Loader2 className="spin" size={40} color="#3b82f6" />
+      <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0e0e0e' }}>
+        <Loader2 className="spin" size={40} color="#c4a775" />
       </div>
     );
   }
@@ -216,9 +216,7 @@ export default function EditProductPage() {
             </button>
           </Link>
           <div className="header-content">
-     
             <h1>Edit Product</h1>
-         
           </div>
         </div>
 
@@ -237,7 +235,6 @@ export default function EditProductPage() {
                 <strong>⚠️ File Size Limits:</strong>
                 <ul>
                   <li>Maximum <strong>2MB per image</strong></li>
-                
                 </ul>
               </div>
 
@@ -294,7 +291,7 @@ export default function EditProductPage() {
               <input 
                 name="name" 
                 required 
-                placeholder="e.g. Neon Cyber Jacket" 
+                placeholder="e.g. Classic Gold Timepiece" 
                 value={formData.name} 
                 onChange={handleChange} 
               />
@@ -393,9 +390,33 @@ export default function EditProductPage() {
         </form>
       </div>
 
+      {/* ✅ LUXURY THEME CSS INJECTION - Original rounded styling preserved */}
       <style dangerouslySetInnerHTML={{__html: `
+        /* 🟢 Fixes the empty black sides by matching the body background natively */
+        :global(body) {
+          background-color: #0e0e0e !important; 
+        }
+
+        .page-wrapper { 
+          background: transparent; 
+          color: #e2e8f0; 
+          min-height: 100vh; 
+          padding: 0 5%;
+          width: 100%; 
+          font-family: var(--font-serif, serif); 
+        }
+          
+        .page {
+           background: transparent; 
+          color: #e2e8f0; 
+          min-height: 100vh; 
+          padding: 0 5%;
+          width: 100%; 
+          font-family: var(--font-serif, serif); 
+        }
+
         .product-form-container {
-          max-width: 900px;
+          max-width: 100;
           margin: 0 auto;
           padding: 20px;
           padding-bottom: 60px;
@@ -424,8 +445,9 @@ export default function EditProductPage() {
         }
 
         .back-btn:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.2);
+          background: rgba(196, 167, 117, 0.1);
+          border-color: #c4a775;
+          color: #c4a775;
         }
 
         .header-content {
@@ -439,22 +461,26 @@ export default function EditProductPage() {
           display: flex;
           align-items: center;
           gap: 12px;
+          font-family: var(--font, sans-serif);
+          text-transform: uppercase;
+          letter-spacing: 2px;
         }
 
         .header-icon {
-          color: #3b82f6;
+          color: #c4a775;
         }
 
         .subtitle {
           color: #94a3b8;
           margin: 0;
           font-size: 0.95rem;
+          font-family: var(--font-serif, serif);
         }
 
         .product-form-panel {
-          background: rgba(255, 255, 255, 0.03);
+          background: rgba(255, 255, 255, 0.02);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 20px;
+          border-radius: 0px;
           padding: 32px;
           backdrop-filter: blur(10px);
         }
@@ -475,24 +501,30 @@ export default function EditProductPage() {
           align-items: center;
           margin-bottom: 16px;
           font-weight: 600;
-          color: #e2e8f0;
+          color: #c4a775;
           font-size: 0.95rem;
+          font-family: var(--font, sans-serif);
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         .image-count {
           font-size: 0.85rem;
           opacity: 0.7;
           font-weight: 400;
+          color: #888;
         }
 
         .file-warning {
-          background: rgba(251, 191, 36, 0.1);
-          border: 1px solid rgba(251, 191, 36, 0.3);
-          border-radius: 12px;
+          background: rgba(196, 167, 117, 0.05);
+          border: 1px solid rgba(196, 167, 117, 0.3);
+          border-radius: 0px;
           padding: 16px;
           margin-bottom: 20px;
           font-size: 0.85rem;
-          color: #fbbf24;
+          color: #c4a775;
+          font-family: var(--font, sans-serif);
+          letter-spacing: 0.5px;
         }
 
         .file-warning strong {
@@ -508,7 +540,7 @@ export default function EditProductPage() {
 
         .drop-zone {
           border: 2px dashed rgba(255, 255, 255, 0.2);
-          border-radius: 16px;
+          border-radius: 0px;
           padding: 40px;
           text-align: center;
           cursor: pointer;
@@ -519,20 +551,21 @@ export default function EditProductPage() {
 
         .drop-zone:hover,
         .drop-zone.active {
-          border-color: #3b82f6;
-          background: rgba(59, 130, 246, 0.05);
+          border-color: #c4a775;
+          background: rgba(196, 167, 117, 0.05);
         }
 
         .upload-icon {
           margin: 0 auto 16px;
-          opacity: 0.5;
-          color: #94a3b8;
+          color: #c4a775;
         }
 
         .drop-zone p {
           margin: 0;
           font-weight: 500;
           color: #cbd5e1;
+          font-family: var(--font, sans-serif);
+          letter-spacing: 1px;
         }
 
         .image-grid {
@@ -544,7 +577,7 @@ export default function EditProductPage() {
         .image-preview {
           position: relative;
           aspect-ratio: 1;
-          border-radius: 12px;
+          border-radius: 0px;
           overflow: hidden;
           border: 2px solid rgba(255, 255, 255, 0.1);
           background: #000;
@@ -563,7 +596,7 @@ export default function EditProductPage() {
           background: rgba(0, 0, 0, 0.8);
           border: none;
           color: #ff4d4d;
-          border-radius: 50%;
+          border-radius: 0%;
           width: 28px;
           height: 28px;
           cursor: pointer;
@@ -583,12 +616,14 @@ export default function EditProductPage() {
           bottom: 0;
           left: 0;
           right: 0;
-          background: rgba(0, 0, 0, 0.7);
-          color: white;
+          background: rgba(196, 167, 117, 0.8);
+          color: #000;
           font-size: 10px;
           text-align: center;
           padding: 4px 0;
-          font-weight: 600;
+          font-weight: 700;
+          letter-spacing: 1px;
+          text-transform: uppercase;
         }
 
         .form-field {
@@ -602,41 +637,38 @@ export default function EditProductPage() {
         }
 
         .form-field label {
-          font-weight: 500;
-          color: #cbd5e1;
-          font-size: 0.9rem;
-        }
-
-        .hint {
-          font-size: 0.8rem;
-          opacity: 0.6;
-          font-weight: 400;
-          margin-left: 6px;
+          font-weight: 600;
+          color: #c4a775;
+          font-size: 0.85rem;
+          font-family: var(--font, sans-serif);
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
 
         .form-field input,
         .form-field textarea {
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba(0,0,0,0.5);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          border-radius: 0px;
           padding: 12px 16px;
           color: white;
           font-size: 1rem;
           outline: none;
           transition: all 0.2s;
-          font-family: inherit;
+          font-family: var(--font-serif, serif);
         }
 
         .form-field input:focus,
         .form-field textarea:focus {
-          border-color: #3b82f6;
-          background: rgba(255, 255, 255, 0.08);
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          border-color: #c4a775;
+          background: #000;
+          box-shadow: 0 0 0 3px rgba(196, 167, 117, 0.1);
         }
 
         .form-field input::placeholder,
         .form-field textarea::placeholder {
           color: #64748b;
+          font-style: italic;
         }
 
         .form-field textarea {
@@ -656,9 +688,9 @@ export default function EditProductPage() {
         }
 
         .custom-select-trigger {
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba(0,0,0,0.5);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          border-radius: 0px;
           padding: 12px 16px;
           color: white;
           font-size: 1rem;
@@ -668,15 +700,17 @@ export default function EditProductPage() {
           align-items: center;
           transition: all 0.2s;
           width: 100%;
+          font-family: var(--font-serif, serif);
         }
 
         .custom-select-trigger:hover {
-          border-color: #3b82f6;
-          background: rgba(255, 255, 255, 0.08);
+          border-color: #c4a775;
+          background: #000;
         }
 
         .custom-select-trigger .placeholder {
           color: #94a3b8;
+          font-style: italic;
         }
 
         .custom-select-trigger .selected {
@@ -689,6 +723,7 @@ export default function EditProductPage() {
 
         .chevron.open {
           transform: rotate(180deg);
+          color: #c4a775;
         }
 
         .custom-options-list {
@@ -696,12 +731,14 @@ export default function EditProductPage() {
           top: calc(100% + 8px);
           left: 0;
           right: 0;
-          background: rgba(20, 20, 25, 0.95);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
+          background: #0e0e0e;
+          border: 1px solid #c4a775;
+          border-radius: 0px;
           overflow: hidden;
           z-index: 100;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+          max-height: 250px;
+          overflow-y: auto;
         }
 
         .custom-option {
@@ -709,6 +746,8 @@ export default function EditProductPage() {
           color: #cbd5e1;
           cursor: pointer;
           transition: all 0.2s;
+          font-family: var(--font-serif, serif);
+          border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
         .custom-option:hover {
@@ -717,10 +756,14 @@ export default function EditProductPage() {
         }
 
         .custom-option.selected {
-          background: rgba(59, 130, 246, 0.2);
-          color: #3b82f6;
+          background: rgba(196, 167, 117, 0.1);
+          color: #c4a775;
           font-weight: 600;
         }
+
+        /* Scrollbar for dropdown */
+        .custom-options-list::-webkit-scrollbar { width: 4px; }
+        .custom-options-list::-webkit-scrollbar-thumb { background: #c4a775; }
 
         .form-actions {
           grid-column: 1 / -1;
@@ -728,6 +771,9 @@ export default function EditProductPage() {
           display: flex;
           justify-content: flex-end;
         }
+
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
           .form-grid {

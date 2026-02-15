@@ -1,33 +1,36 @@
 import mysql from 'mysql2/promise';
 
-// Create a connection pool to reuse connections (Faster & Better for Next.js)
-const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST || 'localhost',
-  user: process.env.MYSQL_USER || 'root',
+// Create a connection pool to reuse connections
+// Use global object to preserve pool across HMR reloads in development
+const pool = global.mysqlPool || mysql.createPool({
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE || 'ecommerce_db',
+  database: process.env.MYSQL_DATABASE,
   waitForConnections: true,
-  connectionLimit: 10, 
+  connectionLimit: 5,
   queueLimit: 0,
-  // Timeout settings to prevent ECONNABORTED errors
-  connectTimeout: 60000, // 60 seconds to establish connection
-  acquireTimeout: 60000, // 60 seconds to acquire connection from pool
-  timeout: 60000, // 60 seconds query timeout
-  // Enable keep-alive to prevent connection drops
+  connectTimeout: 60000,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0
 });
 
-// Optional: Test connection when the app starts (Dev mode only)
 if (process.env.NODE_ENV !== 'production') {
-  pool.getConnection()
-    .then((conn) => {
-      console.log("Database Connected Successfully");
-      conn.release(); // Always put the connection back in the pool
-    })
-    .catch((err) => {
-      console.error("❌ MySQL Connection Failed:", err.message);
-    });
+  global.mysqlPool = pool;
+
+  // Optional health check
+  // Only run if we just created the pool (not verified on every HMR to reduce log noise)
+  if (!global.mysqlPoolChecked) {
+    pool.getConnection()
+      .then((conn) => {
+        console.log("Database Connected Successfully (Singleton)");
+        conn.release();
+        global.mysqlPoolChecked = true;
+      })
+      .catch((err) => {
+        console.error(" MySQL Connection Failed:", err.message);
+      });
+  }
 }
 
 export default pool;

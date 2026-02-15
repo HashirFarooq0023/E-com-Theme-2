@@ -1,144 +1,110 @@
-"""
-Main entry point for the Store Assistant AI Agent.
-"""
-
-import argparse
-import sys
+import uvicorn
 import os
-from pathlib import Path
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional, List, Dict
+from fastapi import Security, status
+from fastapi.security import APIKeyHeader
 
-
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent))
-
+# Import your modules
 from src.assistant.store_assistant import StoreAssistant
-from src.models.llm_handler import LLMHandler
-from src.rag.retrieval import RetrievalSystem
-from src.rag.embeddings import EmbeddingModel
-from src.products.product_manager import ProductManager
-from src.orders.order_manager import OrderManager
-from src.audio.text_to_speech import TextToSpeech
-from src.chat.chat_interface import ChatInterface
-import yaml
+from dotenv import load_dotenv
 
-def load_config(config_path: str = "config/config.yaml"):
-    """Load configuration from YAML file."""
-    if os.path.exists(config_path):
-        with open(config_path, 'r') as f:
-            return yaml.safe_load(f)
-    return {}
+# Load Environment Variables (API Keys)
+load_dotenv()
 
+# --- Configuration ---
+app = FastAPI(title="Trends Store AI API")
 
-def create_assistant(config: dict) -> StoreAssistant:
-    """Create and configure Store Assistant."""
-    # LLM Handler
-    llm_config = config.get('llm', {})
-    llm_handler = LLMHandler(
-        model_type=llm_config.get('model_type', 'openai'),
-        model_name=llm_config.get('model_name'),
-        api_key=llm_config.get('api_key'),
-        base_url=llm_config.get('base_url'),
-        temperature=llm_config.get('temperature', 0.7),
-        max_tokens=llm_config.get('max_tokens')
-    )
-    
-    # RAG System
-    rag_config = config.get('rag', {})
+# Allow the Next.js frontend (localhost:3000) to talk to this Python backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    # Embeddings (now defaulting to Ollama local embeddings)
-    embedding_model = EmbeddingModel(
-        model_name=rag_config.get('embedding_model', 'mxbai-embed-large'),
-        provider=rag_config.get('embedding_provider', 'ollama'),
-        base_url=llm_config.get('base_url'),
-    )
+# Initialize the Assistant (The Brain)
+# We don't need to pass config anymore; it uses defaults + .env
+try:
+    assistant = StoreAssistant(store_name="Trends Store")
+    print(" Store Assistant Initialized Successfully!")
+except Exception as e:
+    print(f" Error Initializing Assistant: {str(e)}")
+    assistant = None
 
-    retrieval_system = RetrievalSystem(
-        embedding_model=embedding_model,
-        top_k=rag_config.get('top_k', 5),
-        vector_store_type=rag_config.get('vector_store_type', 'chroma'),
-        persist_dir=rag_config.get('persist_dir'),
-        collection_name=rag_config.get('collection_name', 'store_assistant')
-    )
-    
-    # Product Manager
-    products_config = config.get('products', {})
-    product_manager = ProductManager(
-        products_file=products_config.get('data_file')
-    )
-    
-    # Order Manager
-    orders_config = config.get('orders', {})
-    order_manager = OrderManager(
-        orders_file=orders_config.get('data_file')
-    )
-    
-    # TTS (optional)
-    audio_config = config.get('audio', {})
-    tts = None
-    if audio_config.get('enable_audio', True):
-        try:
-            tts = TextToSpeech(
-                engine=audio_config.get('tts_engine', 'pyttsx3'),
-                voice=audio_config.get('tts_voice'),
-                rate=audio_config.get('tts_rate', 150)
-            )
-        except Exception as e:
-            print(f"Warning: Could not initialize TTS: {e}")
-    
-    # Assistant
-    assistant_config = config.get('assistant', {})
-    assistant = StoreAssistant(
-        llm_handler=llm_handler,
-        retrieval_system=retrieval_system,
-        product_manager=product_manager,
-        order_manager=order_manager,
-        tts=tts,
-        use_rag=assistant_config.get('use_rag', True)
-    )
-    
-    return assistant
+# --- Data Models (Validation) ---
+class ChatRequest(BaseModel):
+    message: str
+    session_id: str = "guest_session"
 
+class SyncRequest(BaseModel):
+    admin_key: Optional[str] = None
 
-def main():
-    """Main function."""
-    parser = argparse.ArgumentParser(description="Store Assistant AI Agent")
-    parser.add_argument(
-        '--config',
-        type=str,
-        default='config/config.yaml',
-        help='Path to configuration file'
-    )
-    parser.add_argument(
-        '--mode',
-        type=str,
-        default='chat',
-        choices=['chat', 'audio', 'both'],
-        help='Interaction mode'
-    )
-    args = parser.parse_args()
-    
-    # Load configuration
-    config = load_config(args.config)
-    
-    # Create assistant
-    print("Initializing Store Assistant...")
-    assistant = create_assistant(config)
-    print("Store Assistant ready!\n")
-    
-    # Set up message handler
-    def handle_message(message: str) -> str:
-        use_audio = args.mode in ['audio', 'both']
-        return assistant.process_message(message, use_audio=use_audio)
-    
-    # Start chat interface
-    if args.mode in ['chat', 'both']:
-        chat = ChatInterface(on_message=handle_message)
-        chat.start_chat()
-    else:
-        # Audio-only mode (future implementation)
-        print("Audio-only mode not yet fully implemented. Please use 'chat' or 'both' mode.")
-        sys.exit(1)
+# --- Security ---
+api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
+async def verify_api_key(api_key: str = Security(api_key_header)):
+    expected_key = os.getenv("API_KEY")
+    if not expected_key:
+        # If no key set in env, warn but allow (or fail secure - let's fail secure)
+        print("WARNING: API_KEY not set in .env! rejecting requests.")
+        raise HTTPException(status_code=500, detail="Server misconfiguration")
+        
+    if api_key != expected_key:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid API Key"
+        )
+    return api_key
 
+# --- API Endpoints ---
+
+@app.get("/")
+def health_check():
+    """Simple check to see if the server is running."""
+    return {
+        "status": "online",
+        "system": "Trends Store AI",
+        "model": "Groq Llama 3.3 70B",
+        "database": "ChromaDB + HuggingFace"
+    }
+
+@app.post("/chat")
+async def chat_endpoint(request: ChatRequest, api_key: str = Security(verify_api_key)):
+    """
+    The main endpoint. Next.js sends text here, we return the AI response.
+    """
+    if not assistant:
+        raise HTTPException(status_code=500, detail="AI Assistant is not initialized.")
+    
+    try:
+        response = assistant.process_user_message(
+            user_message=request.message,
+            session_id=request.session_id
+        )
+        return response
+    except Exception as e:
+        print(f"Error processing chat: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/sync-products")
+async def sync_products(request: SyncRequest, api_key: str = Security(verify_api_key)):
+    """
+    (Optional) Call this to re-run the ingestion script 
+    if you add new products to MySQL.
+    """
+    try:
+        # Run the ingestion script programmatically
+        os.system("python scripts/ingest_products.py")
+        return {"status": "success", "message": "Product database updated."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# --- Entry Point ---
 if __name__ == "__main__":
-    main()
+    # This runs when you type 'python ai-service/main.py'
+    print(" Starting  AI Server...")
+    uvicorn.run(app, host="0.0.0.0", port=8000)

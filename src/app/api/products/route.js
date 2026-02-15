@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getProducts, createProduct, deleteProduct, updateProduct, getProductById } from "@/lib/products";
-import { getSession } from "@/lib/auth"; 
+import { getSession } from "@/lib/auth";
+import { productSchema } from "@/lib/schemas";
 
 // ---------------------------------------------------------
 // 1. GET ALL PRODUCTS (GET /api/products)
@@ -8,10 +9,10 @@ import { getSession } from "@/lib/auth";
 export async function GET() {
   try {
     const products = await getProducts();
-    
-    return NextResponse.json(products, { 
-      status: 200, 
-      headers: { 'Cache-Control': 'no-store' } 
+
+    return NextResponse.json(products, {
+      status: 200,
+      headers: { 'Cache-Control': 'no-store' }
     });
 
   } catch (error) {
@@ -27,23 +28,28 @@ export async function POST(request) {
   try {
     const body = await request.json();
 
-    if (!body.name || !body.price) {
-      return NextResponse.json({ error: "Name and Price are required" }, { status: 400 });
+    // 🛡️ Zod Validation
+    const validation = productSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json({
+        error: "Validation Failed",
+        details: validation.error.format()
+      }, { status: 400 });
     }
 
-    const result = await createProduct(body);
+    const result = await createProduct(validation.data);
 
     if (result.success) {
       return NextResponse.json({ message: "Product created", id: result.newId }, { status: 201 });
     } else {
-      return NextResponse.json({ 
-        error: result.error || "Failed to create product" 
+      return NextResponse.json({
+        error: result.error || "Failed to create product"
       }, { status: 500 });
     }
   } catch (error) {
     console.error("API POST Error:", error);
-    return NextResponse.json({ 
-      error: error.message || "Internal Server Error" 
+    return NextResponse.json({
+      error: error.message || "Internal Server Error"
     }, { status: 500 });
   }
 }
@@ -73,14 +79,14 @@ export async function DELETE(request) {
     if (result.success) {
       return NextResponse.json({ message: "Product deleted successfully" }, { status: 200 });
     } else {
-      return NextResponse.json({ 
-        error: result.error || "Failed to delete product" 
+      return NextResponse.json({
+        error: result.error || "Failed to delete product"
       }, { status: 500 });
     }
   } catch (error) {
     console.error("API DELETE Error:", error);
-    return NextResponse.json({ 
-      error: error.message || "Internal Server Error" 
+    return NextResponse.json({
+      error: error.message || "Internal Server Error"
     }, { status: 500 });
   }
 }
