@@ -7,6 +7,10 @@ const pool = global.mysqlPool || mysql.createPool({
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
+  port: process.env.MYSQL_PORT || 4000, // <-- ADDED: Defaults to TiDB's port 4000
+  ssl: {
+    rejectUnauthorized: true // <-- ADDED: Strictly required by TiDB Serverless
+  },
   waitForConnections: true,
   connectionLimit: 5,
   queueLimit: 0,
