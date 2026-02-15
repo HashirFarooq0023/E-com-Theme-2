@@ -5,11 +5,16 @@ require('dotenv').config({ path: '.env.local' });
 (async () => {
   let connection;
   try {
-    connection = await mysql.createConnection({
-      host: process.env.MYSQL_HOST || 'localhost',
-      user: process.env.MYSQL_USER || 'root',
+    const connection = await mysql.createConnection({
+      host: process.env.MYSQL_HOST,
+      user: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE || 'ecommerce_db',
+      database: process.env.MYSQL_DATABASE,
+      port: process.env.MYSQL_PORT || 4000,
+      ssl: {
+        minVersion: 'TLSv1.2',
+        rejectUnauthorized: true
+      }
     });
 
     console.log("🔵 Connected to database. Preparing to add users...");
