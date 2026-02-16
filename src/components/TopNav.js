@@ -257,7 +257,7 @@ export default function TopNav({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <Link href="/" className="nav-pill-btn" onClick={() => setIsMobileMenuOpen(false)} style={{ fontSize: '1.2rem', padding: '15px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            <Link href="/" className="nav-pill-btn" onClick={() => handleSelect(null)} style={{ fontSize: '1.2rem', padding: '15px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
               HOME
             </Link>
 

@@ -1,0 +1,1 @@
+ALTER TABLE site_settings MODIFY COLUMN logo_url LONGTEXT;

@@ -21,14 +21,14 @@ export async function getProducts() {
 
       return {
         ...p,
-        _id: p.id.toString(), 
+        _id: p.id.toString(),
         name: p.name || "Untitled Product",
         price: Number(p.price) || 0,
         category: p.category || "Uncategorized",
         image: p.image || "https://placehold.co/600x400?text=No+Image", // Main Thumbnail
-        
-        images: gallery, 
-        
+
+        images: gallery,
+
         description: p.description || "No description available",
         stock: p.stock || 0,
         createdAt: p.created_at ? p.created_at.toISOString() : null,
@@ -73,7 +73,7 @@ export async function getProductById(id) {
       gallery = typeof p.images === 'string' ? JSON.parse(p.images) : p.images;
     } catch (e) {
       console.error("Failed to parse images JSON:", e);
-      gallery = []; 
+      gallery = [];
     }
 
     return {
@@ -106,9 +106,9 @@ export async function createProduct(productData) {
     const totalImageSize = imageList.reduce((total, img) => {
       return total + (img ? img.length : 0);
     }, 0);
-    
-    // Max 10MB total for all images (base64 is ~33% larger, so ~7.5MB actual)
-    const maxTotalSize = 10 * 1024 * 1024; // 10MB
+
+    // Max 50MB total for all images (accommodate 5x 10MB images)
+    const maxTotalSize = 50 * 1024 * 1024; // 50MB
     if (totalImageSize > maxTotalSize) {
       return { success: false, error: "Total image size too large. Please reduce image sizes or use fewer images." };
     }
@@ -147,7 +147,7 @@ export async function createProduct(productData) {
     return { success: true, newId: result.insertId.toString() };
   } catch (error) {
     console.error("❌ Error in createProduct:", error);
-    
+
     // Provide more helpful error messages
     let errorMessage = error.message;
     if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
@@ -157,7 +157,7 @@ export async function createProduct(productData) {
     } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
       errorMessage = "Database access denied. Please check your credentials.";
     }
-    
+
     return { success: false, error: errorMessage };
   }
 }
@@ -171,7 +171,7 @@ export async function updateProduct(id, updateData) {
 
     // Valid database columns (exclude highlights as it doesn't exist in DB)
     const validColumns = ['name', 'price', 'category', 'description', 'stock', 'rating'];
-    
+
     // 1. Loop through normal fields (name, price, etc.) - only valid columns
     Object.keys(fieldsToUpdate).forEach((key) => {
       if (validColumns.includes(key)) {
@@ -208,7 +208,7 @@ export async function updateProduct(id, updateData) {
     console.error("❌ Error in updateProduct:", error);
     return { success: false, error: error.message };
   }
-} 
+}
 
 // DELETE PRODUCT
 export async function deleteProduct(id) {
@@ -240,12 +240,12 @@ export async function getTopRatedProducts() {
 
       return {
         ...p,
-        _id: p.id.toString(), 
+        _id: p.id.toString(),
         name: p.name || "Untitled Product",
         price: Number(p.price) || 0,
         category: p.category || "Uncategorized",
         image: p.image || "https://placehold.co/600x400?text=No+Image",
-        images: gallery, 
+        images: gallery,
         description: p.description || "No description available",
         stock: p.stock || 0,
         rating: Number(p.rating) || 0,

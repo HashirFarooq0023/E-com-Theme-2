@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { UploadCloud, X, Loader2 } from 'lucide-react';
 
-export default function ImageUpload({ value, onChange, placeholder = "Upload Image" }) {
+export default function ImageUpload({ value, onChange, placeholder = "Upload Image", base64 = false }) {
     const [dragActive, setDragActive] = useState(false);
     const [uploading, setUploading] = useState(false);
 
@@ -16,6 +16,17 @@ export default function ImageUpload({ value, onChange, placeholder = "Upload Ima
             return;
         }
 
+        // Base64 Mode
+        if (base64) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                onChange(reader.result);
+            };
+            reader.readAsDataURL(file);
+            return;
+        }
+
+        // Standard Upload Mode
         setUploading(true);
         const formData = new FormData();
         formData.append('file', file);

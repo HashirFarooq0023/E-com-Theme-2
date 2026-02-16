@@ -152,6 +152,7 @@ export default function AdminSettingsPage() {
                                         value={formData.logo_url}
                                         onChange={(url) => setFormData(prev => ({ ...prev, logo_url: url }))}
                                         placeholder="Click or Drag Logo Here"
+                                        base64={true}
                                     />
                                 </div>
                             </div>

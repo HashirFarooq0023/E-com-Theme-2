@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, UploadCloud, X, Loader2, ChevronDown } from "lucide-react"; 
+import { ArrowLeft, Save, UploadCloud, X, Loader2, ChevronDown } from "lucide-react";
 import WaterButton from "@/components/WaterButton";
 import TopNav from "@/components/TopNav";
 import { useRouteAccess } from "@/hooks/useRouteAccess";
@@ -22,7 +22,7 @@ export default function AddProductPage() {
   const [loading, setLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
+
   const dropdownRef = useRef(null);
 
   // Close dropdown if clicking outside
@@ -39,10 +39,10 @@ export default function AddProductPage() {
   const [formData, setFormData] = useState({
     name: "",
     price: "",
-    category: "", 
+    category: "",
     stock: "",
     rating: 4.5,
-    images: [], 
+    images: [],
     description: "",
   });
 
@@ -94,12 +94,13 @@ export default function AddProductPage() {
         return;
       }
 
-      // Check file size (max 2MB per image to prevent timeout)
-      const maxSize = 2 * 1024 * 1024; // 2MB
+      // Check file size (max 10MB per image)
+      const maxSize = 10 * 1024 * 1024; // 10MB
       if (file.size > maxSize) {
-        alert(`${file.name} is too large. Maximum size is 2MB per image.`);
+        alert(`${file.name} is too large. Maximum size is 10MB per image.`);
         return;
       }
+
 
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -140,7 +141,7 @@ export default function AddProductPage() {
       stock: parseInt(formData.stock) || 0,
       rating: parseFloat(formData.rating) || 0,
       description: formData.description || "",
-      images: formData.images 
+      images: formData.images
     };
 
     try {
@@ -154,9 +155,9 @@ export default function AddProductPage() {
         const errorData = await res.json();
         throw new Error(errorData.error || "Failed to create product");
       }
-      
+
       router.push("/admin/products");
-      router.refresh(); 
+      router.refresh();
     } catch (error) {
       console.error(error);
       alert(`Error: ${error.message}`);
@@ -176,10 +177,10 @@ export default function AddProductPage() {
 
   return (
     <div className="page-wrapper">
-      <TopNav categories={[]} user={user} /> 
+      <TopNav categories={[]} user={user} />
 
       <div className="product-form-container">
-        
+
         <div className="form-header">
           <Link href="/admin/products">
             <button className="back-btn">
@@ -193,11 +194,11 @@ export default function AddProductPage() {
 
         <form className="product-form-panel" onSubmit={handleSubmit}>
           <div className="form-grid">
-            
+
             {/* --- IMAGE SECTION --- */}
             <div className="form-section image-section">
               <label className="section-label">
-                Product Images 
+                Product Images
                 <span className="image-count">{formData.images.length} / 5 Uploaded</span>
               </label>
 
@@ -205,27 +206,27 @@ export default function AddProductPage() {
               <div className="file-warning">
                 <strong>⚠️ File Size Limits:</strong>
                 <ul>
-                  <li>Maximum <strong>2MB per image</strong></li>
+                  <li>Maximum <strong>10MB per image</strong></li>
                 </ul>
               </div>
 
               {/* Upload Box */}
               {formData.images.length < 5 && (
-                <div 
+                <div
                   className={`drop-zone ${dragActive ? "active" : ""}`}
-                  onDragEnter={handleDrag} 
-                  onDragLeave={handleDrag} 
-                  onDragOver={handleDrag} 
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
                   onDrop={handleDrop}
                   onClick={() => document.getElementById('file-upload').click()}
                 >
-                  <input 
-                    type="file" 
-                    id="file-upload" 
-                    multiple 
-                    style={{ display: 'none' }} 
-                    accept="image/*" 
-                    onChange={handleFileSelect} 
+                  <input
+                    type="file"
+                    id="file-upload"
+                    multiple
+                    style={{ display: 'none' }}
+                    accept="image/*"
+                    onChange={handleFileSelect}
                   />
                   <div>
                     <UploadCloud size={40} className="upload-icon" />
@@ -240,9 +241,9 @@ export default function AddProductPage() {
                   {formData.images.map((img, idx) => (
                     <div key={idx} className="image-preview">
                       <img src={img} alt={`Preview ${idx}`} />
-                      <button 
-                        type="button" 
-                        onClick={() => removeImage(idx)} 
+                      <button
+                        type="button"
+                        onClick={() => removeImage(idx)}
                         className="remove-image-btn"
                       >
                         <X size={14} />
@@ -259,19 +260,19 @@ export default function AddProductPage() {
             {/* Inputs */}
             <div className="form-field">
               <label>Product Name</label>
-              <input 
-                name="name" 
-                required 
-                placeholder="e.g. Classic Gold Timepiece" 
-                value={formData.name} 
-                onChange={handleChange} 
+              <input
+                name="name"
+                required
+                placeholder="e.g. Classic Gold Timepiece"
+                value={formData.name}
+                onChange={handleChange}
               />
             </div>
 
             <div ref={dropdownRef} className="form-field category-field">
               <label>Category</label>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="custom-select-trigger"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
@@ -284,9 +285,9 @@ export default function AddProductPage() {
               {isDropdownOpen && (
                 <div className="custom-options-list">
                   {CATEGORIES.map((cat, idx) => (
-                    <div 
-                      key={`${cat}-${idx}`} 
-                      className={`custom-option ${formData.category === cat ? 'selected' : ''}`} 
+                    <div
+                      key={`${cat}-${idx}`}
+                      className={`custom-option ${formData.category === cat ? 'selected' : ''}`}
                       onClick={() => selectCategory(cat)}
                     >
                       {cat}
@@ -299,49 +300,49 @@ export default function AddProductPage() {
             <div className="form-row">
               <div className="form-field">
                 <label>Price (PKR)</label>
-                <input 
-                  name="price" 
-                  type="number" 
-                  step="0.01" 
-                  required 
-                  placeholder="0.00" 
-                  value={formData.price} 
-                  onChange={handleChange} 
+                <input
+                  name="price"
+                  type="number"
+                  step="0.01"
+                  required
+                  placeholder="0.00"
+                  value={formData.price}
+                  onChange={handleChange}
                 />
               </div>
               <div className="form-field">
                 <label>Stock</label>
-                <input 
-                  name="stock" 
-                  type="number" 
-                  required 
-                  placeholder="0" 
-                  value={formData.stock} 
-                  onChange={handleChange} 
+                <input
+                  name="stock"
+                  type="number"
+                  required
+                  placeholder="0"
+                  value={formData.stock}
+                  onChange={handleChange}
                 />
               </div>
               <div className="form-field">
                 <label>Rating</label>
-                <input 
-                  name="rating" 
-                  type="number" 
-                  step="0.1" 
-                  max="5" 
-                  value={formData.rating} 
-                  onChange={handleChange} 
+                <input
+                  name="rating"
+                  type="number"
+                  step="0.1"
+                  max="5"
+                  value={formData.rating}
+                  onChange={handleChange}
                 />
               </div>
             </div>
 
             <div className="form-field full-width">
               <label>Description</label>
-              <textarea 
-                name="description" 
-                rows="4" 
-                required 
-                placeholder="Product details..." 
-                value={formData.description} 
-                onChange={handleChange} 
+              <textarea
+                name="description"
+                rows="4"
+                required
+                placeholder="Product details..."
+                value={formData.description}
+                onChange={handleChange}
               />
             </div>
 
@@ -351,7 +352,7 @@ export default function AddProductPage() {
                   <Loader2 className="spin" size={18} />
                 ) : (
                   <>
-                    <Save size={18} style={{ marginRight: '8px' }} /> 
+                    <Save size={18} style={{ marginRight: '8px' }} />
                     Save Product
                   </>
                 )}
@@ -361,7 +362,8 @@ export default function AddProductPage() {
         </form>
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* Let the wrapper span 100% of the viewport width */
         :global(body) {
           background-color: #0e0e0e !important; 

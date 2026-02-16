@@ -117,7 +117,7 @@ async function setupDatabase() {
         id INT PRIMARY KEY, -- We only use ID 1
         brand_name VARCHAR(255) DEFAULT 'My Brand',
         brand_description TEXT,
-        logo_url TEXT,
+        logo_url LONGTEXT,
         email_address VARCHAR(255),
         helpline_number VARCHAR(50),
         whatsapp_number VARCHAR(50),
