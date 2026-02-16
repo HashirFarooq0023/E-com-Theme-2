@@ -17,11 +17,22 @@ export default async function Icon() {
             const filePath = path.join(process.cwd(), 'public', logoUrl);
             if (fs.existsSync(filePath)) {
                 const fileBuffer = fs.readFileSync(filePath);
-                // Convert buffer to array buffer for ImageResponse
                 imageSrc = fileBuffer.buffer;
             }
         } catch (e) {
-            console.error("Icon generation error:", e);
+            console.error("Icon generation error (file):", e);
+        }
+    }
+    // Handle Base64 Data URIs: Convert to Banner/ArrayBuffer for Satori
+    else if (logoUrl && logoUrl.startsWith('data:')) {
+        try {
+            const base64Data = logoUrl.split(',')[1];
+            if (base64Data) {
+                const buffer = Buffer.from(base64Data, 'base64');
+                imageSrc = buffer.buffer;
+            }
+        } catch (e) {
+            console.error("Icon generation error (base64):", e);
         }
     }
 

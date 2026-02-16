@@ -4,7 +4,7 @@ import { jwtVerify } from 'jose';
 // Make sure this matches the secret in src/lib/auth.js
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || "default-secret-key-change-this");
 
-export async function middleware(req) {
+export async function proxy(req) {
     const { pathname } = req.nextUrl;
 
     // 🛡️ PROTECT ADMIN ROUTES

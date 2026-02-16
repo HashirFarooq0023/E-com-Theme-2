@@ -211,7 +211,7 @@ export default function AdminSettingsPage() {
                         {/* ACTION BAR */}
                         <div className="action-bar">
                             <WaterButton variant="primary" type="submit" disabled={saving} className="save-btn">
-                                {saving ? <Loader2 className="spin" size={18} /> : <><Save size={18} style={{ marginRight: 8 }} /> SAVE CHANGES</>}
+                                {saving ? <Loader2 className="spin" size={18} /> : <><Save size={18} /> SAVE CHANGES</>}
                             </WaterButton>
                         </div>
 

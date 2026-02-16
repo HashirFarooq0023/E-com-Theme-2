@@ -74,12 +74,12 @@ async function setupDatabase() {
         name VARCHAR(255) NOT NULL,
         price DECIMAL(10, 2) NOT NULL,
         category VARCHAR(255),
-        image TEXT,
-        images JSON,
-        description TEXT,
+        image LONGTEXT,
+        images LONGTEXT,
+        description LONGTEXT,
         stock INT DEFAULT 0,
         rating DECIMAL(3, 2) DEFAULT 0,
-        highlights TEXT, -- Added to support your new Product Details page chips
+        highlights LONGTEXT, -- Added to support your new Product Details page chips
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       );

@@ -107,8 +107,8 @@ export async function createProduct(productData) {
       return total + (img ? img.length : 0);
     }, 0);
 
-    // Max 50MB total for all images (accommodate 5x 10MB images)
-    const maxTotalSize = 50 * 1024 * 1024; // 50MB
+    // Max 75MB total for all images (accommodate 5x 10MB images converted to Base64 ~67MB)
+    const maxTotalSize = 75 * 1024 * 1024; // 75MB
     if (totalImageSize > maxTotalSize) {
       return { success: false, error: "Total image size too large. Please reduce image sizes or use fewer images." };
     }
@@ -156,6 +156,8 @@ export async function createProduct(productData) {
       errorMessage = "Cannot connect to database. Please ensure MySQL is running.";
     } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
       errorMessage = "Database access denied. Please check your credentials.";
+    } else if (error.code === 'ER_NET_PACKET_TOO_LARGE' || error.measure === 'ER_NET_PACKET_TOO_LARGE') {
+      errorMessage = "Image data is too large for the database setup. Please try fewer images or resize them.";
     }
 
     return { success: false, error: errorMessage };

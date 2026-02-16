@@ -206,7 +206,7 @@ export default function AddProductPage() {
               <div className="file-warning">
                 <strong>⚠️ File Size Limits:</strong>
                 <ul>
-                  <li>Maximum <strong>10MB per image</strong></li>
+                  <li> <strong>10MB per image</strong></li>
                 </ul>
               </div>
 
@@ -352,7 +352,7 @@ export default function AddProductPage() {
                   <Loader2 className="spin" size={18} />
                 ) : (
                   <>
-                    <Save size={18} style={{ marginRight: '8px' }} />
+                    <Save size={18} />
                     Save Product
                   </>
                 )}
@@ -634,7 +634,7 @@ export default function AddProductPage() {
 
         .custom-select-trigger {
           background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
           border-radius: 0px;
           padding: 12px 16px;
           color: white;
@@ -645,6 +645,7 @@ export default function AddProductPage() {
           align-items: center;
           transition: all 0.2s;
           width: 100%;
+          min-height: 50px; /* Match input height */
           font-family: var(--font-serif, serif);
         }
 

@@ -59,24 +59,24 @@ export default function AdminProductsPage() {
   }
 
   // Show nothing or a loader while checking permission
-  if (authLoading) return null; 
+  if (authLoading) return null;
 
   return (
     <div className="page-wrapper">
       <TopNav categories={[]} user={user} />
 
       <div className="products-admin-container">
-        
+
         {/* --- Header --- */}
         <div className="products-header">
           <div className="header-info">
             <h1 className="page-title">INVENTORY</h1>
             <div className="header-line"></div>
           </div>
-          
+
           <Link href="/admin/addproducts">
             <WaterButton variant="primary" className="add-product-btn">
-              <Plus size={16} style={{ marginRight: '8px' }} />
+              <Plus size={16} />
               ADD PRODUCT
             </WaterButton>
           </Link>
@@ -85,9 +85,9 @@ export default function AdminProductsPage() {
         {/* --- Search Bar --- */}
         <div className="search-wrapper">
           <Search size={16} className="search-icon" color="#c4a775" />
-          <input 
-            type="text" 
-            placeholder="SEARCH PRODUCTS BY NAME OR CATEGORY..." 
+          <input
+            type="text"
+            placeholder="SEARCH PRODUCTS BY NAME OR CATEGORY..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="search-input"
@@ -116,20 +116,20 @@ export default function AdminProductsPage() {
                 <tbody>
                   {filteredProducts.map((product) => (
                     <tr key={product._id} className="product-row">
-                      
+
                       {/* Name & Image */}
                       <td className="product-cell">
                         <div className="product-info">
                           <div className="product-image-wrapper">
-                            <img 
-                              src={product.image} 
+                            <img
+                              src={product.image}
                               alt={product.name}
                               className="product-thumbnail"
                             />
                           </div>
                           <div className="product-details">
                             <span className="product-name">{product.name}</span>
-                            <span className="product-id">ID: {product._id.slice(0,8)}</span>
+                            <span className="product-id">ID: {product._id.slice(0, 8)}</span>
                           </div>
                         </div>
                       </td>
@@ -160,13 +160,13 @@ export default function AdminProductsPage() {
                       {/* Actions */}
                       <td className="actions-cell">
                         <div className="action-buttons">
-                          <Link href={`/admin/products/${product._id}`}> 
+                          <Link href={`/admin/products/${product._id}`}>
                             <button className="action-btn edit-btn" title="Edit">
                               <Edit size={14} />
                             </button>
                           </Link>
-                          <button 
-                            className="action-btn delete-btn" 
+                          <button
+                            className="action-btn delete-btn"
                             onClick={() => handleDelete(product._id)}
                             title="Delete"
                           >
@@ -193,7 +193,8 @@ export default function AdminProductsPage() {
 
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* --- Layout --- */
         .page-wrapper { 
           background: transparent; 

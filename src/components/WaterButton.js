@@ -44,6 +44,7 @@ export default function WaterButton({
           letter-spacing: 2px;
           text-transform: uppercase;
           font-size: 0.85rem;
+          text-align: center;
           transition: all 0.3s ease;
           display: inline-flex;
           align-items: center;
