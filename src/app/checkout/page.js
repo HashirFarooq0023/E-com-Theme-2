@@ -26,15 +26,20 @@ export default function CheckoutPage() {
         0
       )
     );
-    const savedUser = JSON.parse(localStorage.getItem("user") || "null");
-    if (savedUser) {
-      setUser(savedUser);
-      setCustomer((prev) => ({
-        ...prev,
-        name: savedUser.name || prev.name,
-        email: savedUser.email || prev.email,
-      }));
-    }
+    // B. Load User Session from API (More Reliable than LocalStorage)
+    fetch('/api/auth/session')
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) {
+          setUser(data.user);
+          setCustomer((prev) => ({
+            ...prev,
+            name: data.user.name || prev.name,
+            email: data.user.email || prev.email,
+          }));
+        }
+      })
+      .catch((err) => console.error("Checkout Session Error:", err));
   }, []);
 
   async function placeOrder() {
@@ -160,9 +165,8 @@ export default function CheckoutPage() {
                 </WaterButton>
                 {orderStatus && (
                   <div
-                    className={`alert ${
-                      orderStatus.type === "success" ? "success" : "error"
-                    }`}
+                    className={`alert ${orderStatus.type === "success" ? "success" : "error"
+                      }`}
                   >
                     {orderStatus.message}
                   </div>

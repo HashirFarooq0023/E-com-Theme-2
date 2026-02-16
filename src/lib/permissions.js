@@ -54,7 +54,8 @@ export function getRedirectPath(userRole) {
     return '/auth'; // Guest -> Login page
   }
   if (userRole === 'admin') {
-    return '/admin/products'; // Admin -> Admin dashboard
+    return '/'; // Admin -> Home page
   }
   return '/'; // User -> Home page
 }
+

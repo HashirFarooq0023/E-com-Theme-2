@@ -6,13 +6,13 @@ import Link from "next/link";
 
 export default async function ProductPage({ params }) {
   const { id } = await params;
-  
+
   // 🟢 FIX: Fetch 'allProducts' here so the variable exists!
   const [product, session, categories, allProducts] = await Promise.all([
     getProductById(id),
     getSession(),
     getAllCategories(),
-    getProducts() 
+    getProducts()
   ]);
 
   // Handle "Not Found"
@@ -40,16 +40,17 @@ export default async function ProductPage({ params }) {
   const user = session ? {
     id: session.userId,
     email: session.email,
-    name: session.name || "User"
+    name: session.name || "User",
+    role: session.role // ✅ Pass Role
   } : null;
 
   // Render Component
   // ✅ Now 'allProducts' contains data, so the Carousel will appear.
   return (
-    <ProductDetails 
-      product={product} 
-      products={allProducts} 
-      user={user} 
+    <ProductDetails
+      product={product}
+      products={allProducts}
+      user={user}
       categories={categories}
     />
   );

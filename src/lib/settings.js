@@ -5,13 +5,26 @@ let settingsCache = null;
 let lastFetchTime = 0;
 const CACHE_DURATION = 60 * 1000; // 60 seconds
 
+const DEFAULT_SETTINGS = {
+  brand_name: "THE LUXURY",
+  brand_description: "Exclusive Limited Edition Timepieces and Accessories.",
+  email_address: "support@gmail.com",
+  helpline_number: "0300000000",
+  whatsapp_number: "0300000000",
+  facebook_url: "https://facebook.com",
+  instagram_url: "https://instagram.com",
+  tiktok_url: "https://tiktok.com",
+  snapchat_url: "https://snapchat.com",
+  logo_url: "",
+};
+
 // Function to GET settings
 export async function getSiteSettings() {
   const now = Date.now();
 
   // Return cached version if valid
   if (settingsCache && (now - lastFetchTime < CACHE_DURATION)) {
-    return settingsCache;
+    return { ...DEFAULT_SETTINGS, ...settingsCache };
   }
 
   try {
@@ -22,12 +35,13 @@ export async function getSiteSettings() {
     settingsCache = data;
     lastFetchTime = now;
 
-    return data;
+    return { ...DEFAULT_SETTINGS, ...data };
   } catch (error) {
     console.error("Database Error (getSiteSettings):", error);
-    return {};
+    return DEFAULT_SETTINGS;
   }
 }
+
 
 
 // Function to UPDATE settings

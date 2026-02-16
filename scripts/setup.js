@@ -9,10 +9,16 @@ async function setupDatabase() {
     console.log("🔵 Connecting to MySQL...");
 
     // 1. Connect to MySQL Server
-    connection = await mysql.createConnection({
+    const connection = await mysql.createConnection({
       host: process.env.MYSQL_HOST,
       user: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+      port: process.env.MYSQL_PORT || 4000,
+      ssl: {
+        minVersion: 'TLSv1.2',
+        rejectUnauthorized: true
+      }
     });
 
     const DB_NAME = process.env.MYSQL_DATABASE;
