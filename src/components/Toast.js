@@ -14,7 +14,7 @@ export default function Toast({ message, isVisible, onClose, id }) {
 
     useEffect(() => {
         if (isVisible) {
-            console.log("Showing Toast:", message); // Debug Log
+
             setShow(true);
             const timer = setTimeout(() => {
                 setShow(false);

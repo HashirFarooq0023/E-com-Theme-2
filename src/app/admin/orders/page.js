@@ -4,29 +4,31 @@ import React, { useState, useEffect, useCallback } from "react";
 import TopNav from "@/components/TopNav";
 import WaterButton from "@/components/WaterButton";
 import { useRouteAccess } from "@/hooks/useRouteAccess";
-import { 
-  Loader2, Calendar, Filter, Package, MapPin, 
-  ChevronDown, ChevronUp, Clock, CheckCircle, XCircle, Settings 
+
+const EMPTY_CATEGORIES = [];
+import {
+  Loader2, Calendar, Filter, Package, MapPin,
+  ChevronDown, ChevronUp, Clock, CheckCircle, XCircle, Settings
 } from "lucide-react";
 
 export default function AdminOrdersPage() {
   // Use centralized permission check
   const { user, loading: authLoading } = useRouteAccess();
-  
+
   // Data
   const [orders, setOrders] = useState([]);
-  const [expandedOrderId, setExpandedOrderId] = useState(null); 
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Filter State
-  const [activeFilter, setActiveFilter] = useState("all"); 
+  const [activeFilter, setActiveFilter] = useState("all");
   const [customDates, setCustomDates] = useState({ start: "", end: "" });
 
   // 1. Stable Fetch Function
   const fetchOrders = useCallback(async (filterType, startDate = null, endDate = null) => {
     setLoading(true);
     setActiveFilter(filterType);
-    
+
     try {
       let url = `/api/orders?filter=${filterType}`;
       if (filterType === 'custom' && startDate && endDate) {
@@ -58,9 +60,9 @@ export default function AdminOrdersPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, status: newStatus }),
       });
-  
+
       if (res.ok) {
-        fetchOrders(activeFilter); 
+        fetchOrders(activeFilter);
       } else {
         const err = await res.json();
         alert(`Error: ${err.error || "Failed to update status"}`);
@@ -73,21 +75,21 @@ export default function AdminOrdersPage() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completed': return '#22c55e'; 
-      case 'pending': return '#f59e0b';   
-      case 'cancelled': return '#ef4444'; 
-      default: return '#94a3b8';          
+      case 'completed': return '#22c55e';
+      case 'pending': return '#f59e0b';
+      case 'cancelled': return '#ef4444';
+      default: return '#94a3b8';
     }
   };
 
-  if (!user && loading) return null; 
+  if (!user && loading) return null;
 
   return (
     <div className="page-wrapper"> {/* ✅ Changed from "page" to "page-wrapper" */}
-      <TopNav categories={[]} user={user} />
+      <TopNav categories={EMPTY_CATEGORIES} user={user} />
 
       <div className="container">
-        
+
         <div className="header-section">
           <div>
             <h1>Orders Management</h1>
@@ -111,9 +113,9 @@ export default function AdminOrdersPage() {
           <div className="divider"></div>
           <form onSubmit={(e) => { e.preventDefault(); fetchOrders('custom', customDates.start, customDates.end); }} className="date-group">
             <Calendar size={18} className="filter-icon" color="#c4a775" />
-            <input type="date" className="date-input" value={customDates.start} onChange={(e) => setCustomDates({...customDates, start: e.target.value})} />
-            <input type="date" className="date-input" value={customDates.end} onChange={(e) => setCustomDates({...customDates, end: e.target.value})} />
-            
+            <input type="date" className="date-input" value={customDates.start} onChange={(e) => setCustomDates({ ...customDates, start: e.target.value })} />
+            <input type="date" className="date-input" value={customDates.end} onChange={(e) => setCustomDates({ ...customDates, end: e.target.value })} />
+
             {/* ✅ FIXED: Corrected Variant and added a specific class to fix the cramping */}
             <WaterButton variant="primary" type="submit" className="apply-date-btn">
               APPLY
@@ -135,7 +137,7 @@ export default function AdminOrdersPage() {
                   <th>Customer</th>
                   <th>Total</th>
                   <th>Status</th>
-                  <th style={{textAlign: 'right'}}>Details</th>
+                  <th style={{ textAlign: 'right' }}>Details</th>
                 </tr>
               </thead>
               <tbody>
@@ -160,13 +162,13 @@ export default function AdminOrdersPage() {
                             {order.status}
                           </span>
                         </td>
-                        <td style={{textAlign: 'right', color: '#c4a775'}}>{isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</td>
+                        <td style={{ textAlign: 'right', color: '#c4a775' }}>{isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</td>
                       </tr>
 
                       {isExpanded && (
                         <tr className="details-row">
-                          <td colSpan="6" style={{ padding: 0 }}> 
-                            <div className="details-wrapper"> 
+                          <td colSpan="6" style={{ padding: 0 }}>
+                            <div className="details-wrapper">
                               <div className="details-container">
                                 {/* 1. Items */}
                                 <div className="detail-col">
@@ -186,7 +188,7 @@ export default function AdminOrdersPage() {
                                           <span className="item-meta">Qty: {item.quantity}</span>
                                         </div>
                                         <div style={{ marginLeft: 'auto' }}>
-                                           <span className="item-total">PKR {(item.quantity * item.price).toLocaleString()}</span>
+                                          <span className="item-total">PKR {(item.quantity * item.price).toLocaleString()}</span>
                                         </div>
                                       </li>
                                     ))}
@@ -199,7 +201,7 @@ export default function AdminOrdersPage() {
                                     <p><strong>{address.name}</strong></p>
                                     <p>{address.house}, {address.street}</p>
                                     <p>{address.city}, {address.province}</p>
-                                    <p style={{color: '#888'}}>{address.phone1}</p>
+                                    <p style={{ color: '#888' }}>{address.phone1}</p>
                                   </div>
                                 </div>
                                 {/* 3. Actions */}
@@ -231,7 +233,8 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* ✅ FIXED: Force body background and let wrapper span 100% */
         :global(body) {
           background-color: #0e0e0e !important;

@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import TopNav from "../../components/TopNav";
+import TopNav from "@/components/TopNav";
+import { useRouteAccess } from "@/hooks/useRouteAccess"; // Centralized check
+
+const EMPTY_CATEGORIES = [];
 import WaterButton from "../../components/WaterButton";
 import { Loader2, Mail, Lock, User, LogOut, ArrowRight, CheckCircle } from "lucide-react";
 import Link from "next/link";
@@ -84,8 +87,8 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="page">
-      <TopNav user={currentUser} categories={[]} />
+    <div className="page-wrapper">
+      <TopNav user={currentUser} categories={EMPTY_CATEGORIES} />
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
         <div className="breadcrumb-nav">

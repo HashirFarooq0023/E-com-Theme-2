@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import TopNav from "@/components/TopNav";
 import { useRouteAccess } from "@/hooks/useRouteAccess";
+
+const EMPTY_CATEGORIES = [];
 import { Loader2, Search, Users, Mail, Calendar, Phone, MapPin } from "lucide-react";
 
 export default function AdminCustomersPage() {
@@ -33,7 +35,7 @@ export default function AdminCustomersPage() {
   }, [authLoading, user]);
 
   // 2. Search Filter (Updated to include Phone)
-  const filteredCustomers = customers.filter(c => 
+  const filteredCustomers = customers.filter(c =>
     c.name?.toLowerCase().includes(search.toLowerCase()) ||
     c.email?.toLowerCase().includes(search.toLowerCase()) ||
     c.phone?.includes(search)
@@ -49,10 +51,10 @@ export default function AdminCustomersPage() {
   if (!user && loading) return null;
   return (
     <div className="page-wrapper">
-      <TopNav categories={[]} user={user} />
+      <TopNav categories={EMPTY_CATEGORIES} user={user} />
 
       <div className="main-container">
-        
+
         {/* HEADER */}
         <div className="header-section">
           <div>
@@ -68,9 +70,9 @@ export default function AdminCustomersPage() {
         {/* SEARCH BAR */}
         <div className="search-wrapper">
           <Search size={16} className="search-icon" color="#c4a775" />
-          <input 
-            type="text" 
-            placeholder="SEARCH BY NAME, EMAIL, OR PHONE..." 
+          <input
+            type="text"
+            placeholder="SEARCH BY NAME, EMAIL, OR PHONE..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -89,7 +91,7 @@ export default function AdminCustomersPage() {
               <p>NO CLIENTS FOUND.</p>
             </div>
           ) : (
-            <div style={{overflowX: 'auto'}}>
+            <div style={{ overflowX: 'auto' }}>
               <table className="custom-table">
                 <thead>
                   <tr>
@@ -97,8 +99,8 @@ export default function AdminCustomersPage() {
                     <th>CONTACT INFO</th>
                     <th>LOCATION</th>
                     <th>JOINED</th>
-                    <th style={{textAlign: 'center'}}>ORDERS</th>
-                    <th style={{textAlign: 'right'}}>TOTAL SPENT</th>
+                    <th style={{ textAlign: 'center' }}>ORDERS</th>
+                    <th style={{ textAlign: 'right' }}>TOTAL SPENT</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -132,7 +134,7 @@ export default function AdminCustomersPage() {
                       <td>
                         {customer.city ? (
                           <div className="icon-text">
-                            <MapPin size={12} color="#c4a775" /> 
+                            <MapPin size={12} color="#c4a775" />
                             {customer.city}, {customer.province}
                           </div>
                         ) : (
@@ -148,7 +150,7 @@ export default function AdminCustomersPage() {
                       </td>
 
                       {/* Stats: Orders */}
-                      <td style={{textAlign: 'center'}}>
+                      <td style={{ textAlign: 'center' }}>
                         <span className={`badge ${customer.total_orders > 0 ? 'active' : ''}`}>
                           {customer.total_orders}
                         </span>
@@ -167,7 +169,8 @@ export default function AdminCustomersPage() {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* --- Layout --- */
        .page-wrapper { 
           background: transparent; 

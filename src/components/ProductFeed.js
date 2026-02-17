@@ -10,7 +10,7 @@ import TopRatedCarousel from "./TopRatedCarousel";
 
 import Toast from "./Toast";
 
-export default function ProductFeed({ initialProducts, user }) {
+export default function ProductFeed({ initialProducts, user, heroCarousel }) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category"); // Get category from URL
 
@@ -83,6 +83,9 @@ export default function ProductFeed({ initialProducts, user }) {
           user={user}
         />
 
+        {/* HERO CAROUSEL (Injected from Parent) */}
+        {!selectedCategory && heroCarousel}
+
         {/* CAROUSEL TOP (Only for All Collection) */}
         {!selectedCategory && <TopRatedCarousel products={products} />}
 
@@ -99,6 +102,7 @@ export default function ProductFeed({ initialProducts, user }) {
           </div>
 
           <div className="product-grid">
+
             {visibleProducts.map((product, index) => (
               <Link
                 href={`/products/${product.id}`}
@@ -180,6 +184,8 @@ export default function ProductFeed({ initialProducts, user }) {
           background: #0e0e0e; 
           color: #e2e8f0;
           padding: 0 1%; /* Reduced from 3% */
+          width: 100%;
+          overflow-x: hidden;
         }
 
         .main-layout {

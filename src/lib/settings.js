@@ -16,6 +16,7 @@ const DEFAULT_SETTINGS = {
   tiktok_url: "https://tiktok.com",
   snapchat_url: "https://snapchat.com",
   logo_url: "",
+  domain_name: "",
 };
 
 // Function to GET settings
@@ -51,7 +52,8 @@ export async function updateSiteSettings(data) {
     SET 
       brand_name = ?, brand_description = ?, logo_url = ?, email_address = ?, 
       helpline_number = ?, whatsapp_number = ?, 
-      facebook_url = ?, instagram_url = ?, tiktok_url = ?, snapchat_url = ?
+      facebook_url = ?, instagram_url = ?, tiktok_url = ?, snapchat_url = ?,
+      domain_name = ?
     WHERE id = 1
   `;
 
@@ -65,7 +67,8 @@ export async function updateSiteSettings(data) {
     data.facebook_url || '',
     data.instagram_url || '',
     data.tiktok_url || '',
-    data.snapchat_url || ''
+    data.snapchat_url || '',
+    data.domain_name || ''
   ];
 
   try {

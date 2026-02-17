@@ -7,6 +7,14 @@ const nextConfig = {
       bodySizeLimit: '75mb',
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+    ],
+  },
 };
 
 

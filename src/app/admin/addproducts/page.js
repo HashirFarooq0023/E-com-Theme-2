@@ -13,6 +13,8 @@ const CATEGORIES = [
   "Skin Care", "Home & Garden", "Beauty", "Sports", "Others"
 ];
 
+const EMPTY_CATEGORIES = [];
+
 export default function AddProductPage() {
   // Use centralized permission check
   const { user, loading: checkingAuth } = useRouteAccess();
@@ -177,7 +179,7 @@ export default function AddProductPage() {
 
   return (
     <div className="page-wrapper">
-      <TopNav categories={[]} user={user} />
+      <TopNav categories={EMPTY_CATEGORIES} user={user} />
 
       <div className="product-form-container">
 

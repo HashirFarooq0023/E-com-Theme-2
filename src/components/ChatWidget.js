@@ -76,7 +76,7 @@ export default function ChatWidget({ isOpen, setIsOpen }) {
 
       // If the AI specifically says to add to cart automatically (optional advanced feature)
       if (data.action === 'ADD_TO_CART' && data.payload) {
-        console.log('AI Auto-Add:', data.payload);
+
         // You could call handleAddToCart here programmatically if you wanted
       }
 

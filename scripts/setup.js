@@ -125,16 +125,28 @@ async function setupDatabase() {
         instagram_url TEXT,
         tiktok_url TEXT,
         snapchat_url TEXT,
+        domain_name VARCHAR(255) DEFAULT '',
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       );
     `);
 
-    // 8. Insert Default Settings Row (NEW)
+    // 8. Create HERO_SLIDES Table (NEW)
+    console.log("🔵 Creating 'hero_slides' table...");
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS hero_slides (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        image_url LONGTEXT NOT NULL,
+        site_id INT DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // 9. Insert Default Settings Row (NEW)
     // using INSERT IGNORE so it doesn't fail if the row already exists
     console.log("🔵 Initializing default site settings...");
     await connection.query(`
-      INSERT IGNORE INTO site_settings (id, brand_name, brand_description, logo_url, email_address)
-      VALUES (1, 'My Awesome Brand', 'Quality products delivered fast.', '', 'support@brand.com');
+      INSERT IGNORE INTO site_settings (id, brand_name, brand_description, logo_url, email_address, domain_name)
+      VALUES (1, 'My Awesome Brand', 'Quality products delivered fast.', '', 'support@brand.com', '');
     `);
 
     console.log("✅ SUCCESS: Database and all tables (Users, Addresses, Products, Orders, Settings) created!");

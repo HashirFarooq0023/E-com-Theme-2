@@ -1,6 +1,8 @@
 import { getProducts } from "@/lib/products";
 import ProductFeed from "@/components/ProductFeed";
+import HeroCarousel from "@/components/HeroCarousel";
 import { getSession } from "@/lib/auth";
+import TopRatedCarousel from "@/components/TopRatedCarousel";
 
 export default async function Home() {
   // 1. Fetch Products
@@ -14,13 +16,14 @@ export default async function Home() {
     id: session.userId,
     email: session.email,
     name: session.name || "User",
-    role: session.role // ✅ Pass Role
+    role: session.role
   } : null;
 
   return (
     <ProductFeed
       initialProducts={products}
       user={user}
+      heroCarousel={<HeroCarousel />}
     />
   );
 }

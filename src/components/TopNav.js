@@ -8,8 +8,10 @@ import { ShoppingBag, User, Home, LayoutGrid, ChevronDown, Settings, List, Packa
 import ChatWidget from "./ChatWidget";
 import { useSettings } from "@/providers/SettingsProvider";
 
+const EMPTY_CATEGORIES = [];
+
 export default function TopNav({
-  categories = [],
+  categories = EMPTY_CATEGORIES,
   selectedCategory,
   onSelectCategory,
   cartCount = 0,

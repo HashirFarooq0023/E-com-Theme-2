@@ -7,6 +7,8 @@ import WaterButton from "@/components/WaterButton";
 import TopNav from "@/components/TopNav";
 import { useRouteAccess } from "@/hooks/useRouteAccess";
 
+const EMPTY_CATEGORIES = [];
+
 export default function AdminProductsPage() {
   // Use centralized permission check
   const { user, loading: authLoading } = useRouteAccess();
@@ -63,7 +65,7 @@ export default function AdminProductsPage() {
 
   return (
     <div className="page-wrapper">
-      <TopNav categories={[]} user={user} />
+      <TopNav categories={EMPTY_CATEGORIES} user={user} />
 
       <div className="products-admin-container">
 

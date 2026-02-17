@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 
 export default function TopRatedCarousel({ products = [] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -10,7 +10,7 @@ export default function TopRatedCarousel({ products = [] }) {
   const intervalRef = useRef(null);
 
   // Filter products with rating = 5
-  const topRatedProducts = products.filter(p => Number(p.rating) === 5);
+  const topRatedProducts = products.filter(p => Number(p.rating) >= 4.5);
 
   // Auto-rotate carousel
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function TopRatedCarousel({ products = [] }) {
           onClick={goToPrev}
           aria-label="Previous slide"
         >
-          ‹
+          <ChevronLeft size={24} />
         </button>
 
         <div className="carousel-track" style={{
@@ -126,10 +126,16 @@ export default function TopRatedCarousel({ products = [] }) {
         .top-rated-carousel {
           width: 100%;
           margin: 0;
-          padding: 15px 0;
-          background: #080808; 
+          padding: 100px 60px 30px;
+          background: transparent; 
           color: white;
           font-family: var(--font, sans-serif); 
+        }
+
+        @media (max-width: 768px) {
+          .top-rated-carousel {
+            padding: 60px 20px 30px;
+          }
         }
 
         /* --- Header Section --- */
@@ -145,7 +151,9 @@ export default function TopRatedCarousel({ products = [] }) {
         .carousel-header h2 {
           font-family: var(--font-serif, serif); /* Use global Playfair */
           font-size: 2.2rem;
-          color: c4a775; /* Gold */
+          font-size: 2.2rem;
+          color: #c4a775; /* Gold */
+          letter-spacing: 1px;
           letter-spacing: 1px;
           margin: 0;
           text-transform: uppercase;
@@ -160,7 +168,7 @@ export default function TopRatedCarousel({ products = [] }) {
           width: 40px;
           height: 3px;
           border-radius: 0;
-          background: rgba(255, 255, 255, 0.2);
+          background:transparent;
           border: none;
           cursor: pointer;
           transition: all 0.4s ease;
@@ -196,18 +204,21 @@ export default function TopRatedCarousel({ products = [] }) {
         .product-tile {
           display: grid;
           grid-template-columns: 1fr 1.2fr; /* Layout: Image left, Text right */
-          gap: 20px;
+          gap: 40px;
           padding: 25px;
           text-decoration: none;
           color: inherit;
           align-items: center;
-          min-height: 500px;
+          min-height: 400px;
+          max-width: 1200px;
+          margin: 0 auto;
         }
 
         /* --- Image Styling --- */
         .tile-image {
           position: relative;
           width: 100%;
+          max-width: 350px;
           aspect-ratio: 1; /* Square for watch-like focus */
           border-radius: 0;
           background: transparent;
@@ -215,12 +226,15 @@ export default function TopRatedCarousel({ products = [] }) {
           display: flex;
           align-items: center;
           justify-content: center;
+          margin: 0 auto;
+          overflow: hidden; /* Ensure image doesn't spill out */
         }
 
         .tile-image img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
+          object-fit: cover; /* Crop to fill square */
+          object-position: center center; /* Center the crop */
           filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
           transition: transform 0.5s ease;
         }
@@ -232,7 +246,7 @@ export default function TopRatedCarousel({ products = [] }) {
         .rating-badge {
           position: absolute;
           top: 0; left: 0;
-          background: #b88b3dff; /* Gold Badge */
+          background: transparent;
           color: #000;
           padding: 6px 6px;
           border-radius: 0;
@@ -241,7 +255,6 @@ export default function TopRatedCarousel({ products = [] }) {
           text-transform: uppercase;
           font-size: 0.9rem;
           letter-spacing: 1px;
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
         }
 
         /* --- Content Styling --- */

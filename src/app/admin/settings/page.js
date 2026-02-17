@@ -28,8 +28,11 @@ export default function AdminSettingsPage() {
         facebook_url: "",
         instagram_url: "",
         tiktok_url: "",
-        snapchat_url: ""
+        snapchat_url: "",
+        domain_name: ""
     });
+
+    const [heroSlides, setHeroSlides] = useState([]); // State for hero slides
 
     // Fetch Settings (Only Once)
     useEffect(() => {
@@ -49,8 +52,13 @@ export default function AdminSettingsPage() {
                             facebook_url: data.facebook_url || "",
                             instagram_url: data.instagram_url || "",
                             tiktok_url: data.tiktok_url || "",
-                            snapchat_url: data.snapchat_url || ""
+                            snapchat_url: data.snapchat_url || "",
+                            domain_name: data.domain_name || ""
                         });
+
+                        // Fetch Slides separate or part of settings?
+                        // Let's fetch slides separately here for simplicity
+                        fetchHeroSlides();
                     }
                 } catch (error) {
                     console.error("Failed to fetch settings", error);
@@ -89,6 +97,48 @@ export default function AdminSettingsPage() {
 
     function handleChange(e) {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
+
+    // --- Hero Slide Handlers ---
+    async function fetchHeroSlides() {
+        try {
+            const res = await fetch("/api/hero-slides");
+            if (res.ok) {
+                setHeroSlides(await res.json());
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function handleAddSlide(url) {
+        if (!url) return;
+        try {
+            const res = await fetch("/api/hero-slides", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image_url: url })
+            });
+            if (res.ok) {
+                setToast({ show: true, message: "Slide Added", id: Date.now() });
+                fetchHeroSlides(); // Refresh
+            }
+        } catch (e) {
+            setToast({ show: true, message: "Failed to add slide", id: Date.now() });
+        }
+    }
+
+    async function handleDeleteSlide(id) {
+        if (!confirm("Delete this slide?")) return;
+        try {
+            const res = await fetch(`/api/hero-slides?id=${id}`, { method: "DELETE" });
+            if (res.ok) {
+                setToast({ show: true, message: "Slide Deleted", id: Date.now() });
+                fetchHeroSlides(); // Refresh
+            }
+        } catch (e) {
+            setToast({ show: true, message: "Failed to delete slide", id: Date.now() });
+        }
     }
 
     if (authLoading) return null;
@@ -132,6 +182,11 @@ export default function AdminSettingsPage() {
                             <div className="form-group full-width">
                                 <label>STORE NAME</label>
                                 <input name="brand_name" value={formData.brand_name} onChange={handleChange} placeholder="e.g. THE LUXURY" />
+                            </div>
+
+                            <div className="form-group full-width">
+                                <label>DOMAIN NAME</label>
+                                <input name="domain_name" value={formData.domain_name} onChange={handleChange} placeholder="e.g. www.theluxury.com" />
                             </div>
 
                             <div className="form-group full-width">
@@ -204,6 +259,43 @@ export default function AdminSettingsPage() {
                                 <div className="form-group">
                                     <label>SNAPCHAT URL</label>
                                     <input name="snapchat_url" value={formData.snapchat_url} onChange={handleChange} placeholder="https://snapchat.com/add/..." />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* HERO SLIDES SECTION */}
+                        <div className="form-section">
+                            <div className="section-title" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '5px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <FileText size={18} color="#c4a775" />
+                                    <h3>HERO SLIDES (HOMEPAGE)</h3>
+                                </div>
+                                <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, paddingLeft: '30px' }}>
+                                    Recommended Size: 1920x1080px (16:9). Max 5MB per image. You can upload multiple slides.
+                                </p>
+                            </div>
+
+                            <div className="slides-grid">
+                                {heroSlides.map(slide => (
+                                    <div key={slide.id} className="slide-item">
+                                        <img src={slide.image_url} alt="Slide" />
+                                        <button
+                                            type="button"
+                                            className="delete-slide-btn"
+                                            onClick={() => handleDeleteSlide(slide.id)}
+                                        >
+                                            REMOVE
+                                        </button>
+                                    </div>
+                                ))}
+
+                                <div className="add-slide-box">
+                                    <ImageUpload
+                                        value=""
+                                        onChange={(url) => handleAddSlide(url)}
+                                        placeholder="Add Slide"
+                                        base64={true}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -363,11 +455,70 @@ export default function AdminSettingsPage() {
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        @media (max-width: 768px) {
-          .form-grid { grid-template-columns: 1fr; }
-          .full-width { grid-column: span 1; }
-          .settings-container { padding: 0 12px 40px; }
           .form-section { padding: 20px; }
+        }
+
+        /* Hero Slides */
+        .slides-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .slide-item {
+            position: relative;
+            width: 480px;
+            aspect-ratio: 16/9;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #000;
+        }
+
+        .slide-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .delete-slide-btn {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.8);
+            color: red;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .slide-item:hover .delete-slide-btn {
+            opacity: 1;
+        }
+
+        .add-slide-box {
+            width: 480px;
+            aspect-ratio: 16/9;
+            flex-shrink: 0;
+        }
+
+        .add-slide-box :global(.image-upload-wrapper) {
+            height: 100%;
+        }
+
+        .add-slide-box :global(.drop-zone) {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
         }
       `}</style>
         </div>
