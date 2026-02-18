@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Edit, Trash2, Plus, Search, Loader2, ImageIcon } from "lucide-react";
+import { Edit, Trash2, Plus, Search, Loader2, ImageIcon, UploadCloud } from "lucide-react";
 import WaterButton from "@/components/WaterButton";
 import TopNav from "@/components/TopNav";
 import { useRouteAccess } from "@/hooks/useRouteAccess";
@@ -60,6 +60,23 @@ export default function AdminProductsPage() {
     }
   }
 
+  // AI Ingestion Logic
+  const [ingesting, setIngesting] = useState(false);
+
+  async function handleIngest() {
+    setIngesting(true);
+    try {
+      const res = await fetch("/api/ingest", { method: "POST" });
+      if (!res.ok) throw new Error("Failed to refresh AI");
+      alert("✅ AI Knowledge Updated Successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("❌ Error updating AI: " + error.message);
+    } finally {
+      setIngesting(false);
+    }
+  }
+
   // Show nothing or a loader while checking permission
   if (authLoading) return null;
 
@@ -76,12 +93,27 @@ export default function AdminProductsPage() {
             <div className="header-line"></div>
           </div>
 
-          <Link href="/admin/addproducts">
-            <WaterButton variant="primary" className="add-product-btn">
-              <Plus size={16} />
-              ADD PRODUCT
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <WaterButton
+              variant="ghost"
+              onClick={handleIngest}
+              disabled={ingesting}
+              style={{ borderColor: '#c4a775', color: '#c4a775', height: '42px', fontSize: '0.75rem' }}
+            >
+              {ingesting ? (
+                <><Loader2 className="spin" size={16} /> REFRESHING AI...</>
+              ) : (
+                <><UploadCloud size={16} /> REFRESH AI</>
+              )}
             </WaterButton>
-          </Link>
+
+            <Link href="/admin/addproducts">
+              <WaterButton variant="primary" className="add-product-btn">
+                <Plus size={16} />
+                ADD PRODUCT
+              </WaterButton>
+            </Link>
+          </div>
         </div>
 
         {/* --- Search Bar --- */}

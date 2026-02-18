@@ -336,10 +336,10 @@ export default function ChatWidget({ isOpen, setIsOpen }) {
         }
 
         .chat-products-area .tile-content {
-          padding: 8px 10px;
+          padding: 6px 8px; /* Reduced padding */
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 2px; /* Reduced gap */
           position: absolute;
           bottom: 0;
           left: 0;
