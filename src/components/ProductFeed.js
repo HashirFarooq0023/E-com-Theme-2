@@ -7,10 +7,11 @@ import { Star, ShoppingBag } from "lucide-react";
 import TopNav from "./TopNav";
 import WaterButton from "./WaterButton";
 import TopRatedCarousel from "./TopRatedCarousel";
+import HeroCarousel from "./HeroCarousel";
 
 import Toast from "./Toast";
 
-export default function ProductFeed({ initialProducts, user, heroCarousel }) {
+export default function ProductFeed({ initialProducts, user, heroSlides, serverCategories }) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category"); // Get category from URL
 
@@ -21,8 +22,8 @@ export default function ProductFeed({ initialProducts, user, heroCarousel }) {
   // Cart State
   const [cartCount, setCartCount] = useState(0);
 
-  // Derive unique categories
-  const categories = [...new Set(products.map((p) => p.category))];
+  // Derive unique categories (Use Server Categories if provided, else derive)
+  const categories = serverCategories || [...new Set(products.map((p) => p.category))];
 
   // Filter products
   const visibleProducts = !selectedCategory
@@ -83,11 +84,11 @@ export default function ProductFeed({ initialProducts, user, heroCarousel }) {
           user={user}
         />
 
-        {/* HERO CAROUSEL (Injected from Parent) */}
-        {!selectedCategory && heroCarousel}
+        {/* HERO CAROUSEL (Passed Data) */}
+        {!selectedCategory && <HeroCarousel slides={heroSlides} />}
 
         {/* CAROUSEL TOP (Only for All Collection) */}
-        {!selectedCategory && <TopRatedCarousel products={products} />}
+        {!selectedCategory && <TopRatedCarousel key="main-carousel" products={products} />}
 
         {/* PRODUCT GRID SECTION */}
         <section className="products-section">
@@ -170,7 +171,7 @@ export default function ProductFeed({ initialProducts, user, heroCarousel }) {
                 <div className="header-line"></div>
               </div>
             </div>
-            <TopRatedCarousel products={products} />
+            <TopRatedCarousel key="related-carousel" products={products} />
           </div>
         )}
       </main>
@@ -247,6 +248,14 @@ export default function ProductFeed({ initialProducts, user, heroCarousel }) {
           text-decoration: none;
           color: inherit;
           display: block;
+          position: relative;
+          z-index: 1;
+        }
+
+        .glass-panel {
+          transition: all 0.4s ease;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.02);
         }
 
         .glass-panel:hover {
@@ -254,7 +263,6 @@ export default function ProductFeed({ initialProducts, user, heroCarousel }) {
           border-color: #c4a775; 
           background: rgba(255, 255, 255, 0.04);
           box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-          transition: all 0.4s ease;
         }
 
         /* --- Image Area --- */
@@ -374,6 +382,8 @@ export default function ProductFeed({ initialProducts, user, heroCarousel }) {
           width: 100%;
           transition: all 0.3s ease;
           background: transparent;
+          position: relative;
+          z-index: 10; /* Ensure button is clickable above the link wrapper */
         }
         
         .glass-panel:hover .luxury-add-btn {

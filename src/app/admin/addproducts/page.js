@@ -168,6 +168,7 @@ export default function AddProductPage() {
     }
   }
 
+
   // 3. RENDER LOADER WHILE CHECKING
   if (checkingAuth) {
     return (
@@ -182,6 +183,7 @@ export default function AddProductPage() {
       <TopNav categories={EMPTY_CATEGORIES} user={user} />
 
       <div className="product-form-container">
+
 
         <div className="form-header">
           <Link href="/admin/products">

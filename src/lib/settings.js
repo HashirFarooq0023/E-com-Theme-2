@@ -1,9 +1,6 @@
 import db from "./db";
 
-// Simple in-memory cache to prevent excessive DB calls
-let settingsCache = null;
-let lastFetchTime = 0;
-const CACHE_DURATION = 60 * 1000; // 60 seconds
+
 
 const DEFAULT_SETTINGS = {
   brand_name: "THE LUXURY",
@@ -11,37 +8,37 @@ const DEFAULT_SETTINGS = {
   email_address: "support@gmail.com",
   helpline_number: "0300000000",
   whatsapp_number: "0300000000",
-  facebook_url: "https://facebook.com",
-  instagram_url: "https://instagram.com",
-  tiktok_url: "https://tiktok.com",
-  snapchat_url: "https://snapchat.com",
+  facebook_url: "",
+  instagram_url: "",
+  tiktok_url: "",
+  snapchat_url: "",
   logo_url: "",
   domain_name: "",
 };
 
-// Function to GET settings
-export async function getSiteSettings() {
+import { cache } from 'react';
+
+let settingsCache = null;
+let settingsCacheTime = 0;
+const CACHE_TTL = 60 * 1000; // 1 minute
+
+// Function to GET settings (Cached per request & memory)
+export const getSiteSettings = cache(async () => {
   const now = Date.now();
-
-  // Return cached version if valid
-  if (settingsCache && (now - lastFetchTime < CACHE_DURATION)) {
-    return { ...DEFAULT_SETTINGS, ...settingsCache };
+  if (settingsCache && (now - settingsCacheTime < CACHE_TTL)) {
+    return settingsCache;
   }
-
   try {
     const [rows] = await db.query('SELECT * FROM site_settings WHERE id = 1');
     const data = rows.length > 0 ? rows[0] : {};
-
-    // Update cache
-    settingsCache = data;
-    lastFetchTime = now;
-
-    return { ...DEFAULT_SETTINGS, ...data };
+    settingsCache = { ...DEFAULT_SETTINGS, ...data };
+    settingsCacheTime = now;
+    return settingsCache;
   } catch (error) {
     console.error("Database Error (getSiteSettings):", error);
-    return DEFAULT_SETTINGS;
+    return settingsCache || DEFAULT_SETTINGS;
   }
-}
+});
 
 
 
@@ -74,6 +71,7 @@ export async function updateSiteSettings(data) {
   try {
     const [result] = await db.query(sql, values);
     settingsCache = null; // Invalidate cache on update
+    settingsCacheTime = 0;
     return result;
   } catch (error) {
     console.error("Database Error (updateSiteSettings):", error);

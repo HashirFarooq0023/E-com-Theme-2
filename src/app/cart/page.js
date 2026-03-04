@@ -27,10 +27,8 @@ export default function CartPage() {
   const [user, setUser] = useState(null);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [isCartLoaded, setIsCartLoaded] = useState(false); // Initial Load State
   const [toast, setToast] = useState({ show: false, message: '', id: 0 });
-
-  // State for categories
-  const [categories, setCategories] = useState([]);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -53,6 +51,7 @@ export default function CartPage() {
     const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCart(savedCart);
     calculateTotal(savedCart);
+    setIsCartLoaded(true); // Mark as loaded
 
     // B. Load User Session
     fetch('/api/auth/session')
@@ -64,14 +63,6 @@ export default function CartPage() {
         }
       })
       .catch(() => { });
-
-    // C. Fetch Categories
-    fetch('/api/categories')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) setCategories(data);
-      })
-      .catch(err => console.error("Failed to load categories", err));
 
   }, []);
 
@@ -150,13 +141,11 @@ export default function CartPage() {
         <TopNav
           cartCount={cartCount}
           user={user}
-          categories={categories}
           onSelectCategory={(cat) => router.push(`/?category=${encodeURIComponent(cat)}`)}
         />
       </div>
 
       <main className="cart-container" style={{ paddingTop: '20px' }}>
-
         <div className="breadcrumb-nav" style={{ marginBottom: '20px' }}>
           <Link href="/" className="back-link">
             <ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} />
@@ -168,7 +157,13 @@ export default function CartPage() {
           <h1>CHECKOUT</h1>
           <div className="header-line"></div>
         </div>
-        {cart.length === 0 ? (
+
+        {!isCartLoaded ? (
+          <div className="skeleton-loader">
+            <div className="skeleton-panel"></div>
+            <div className="skeleton-panel"></div>
+          </div>
+        ) : cart.length === 0 ? (
           <div className="empty-cart-panel">
             <p className="empty-msg">YOUR CART IS EMPTY.</p>
             <Link href="/">
@@ -179,7 +174,7 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="checkout-grid">
-
+            {/* ... existing cart content ... */}
             {/* LEFT COLUMN: CART ITEMS */}
             <section className="luxury-panel cart-section">
               <div className="panel-header">
@@ -311,7 +306,6 @@ export default function CartPage() {
 
               </form>
             </section>
-
           </div>
         )}
       </main>
@@ -328,7 +322,7 @@ export default function CartPage() {
           color: #e2e8f0;
           min-height: 100vh;
           width: 100%;
-          padding: 0 1%; /* Matched to Home Page */
+          padding: 0 1%;
           font-family: var(--font-serif, serif);
         }
 
@@ -684,6 +678,30 @@ export default function CartPage() {
         
         /* Default hidden on desktop */
         .mobile-scroll-indicator { display: none; }
+
+        /* --- Skeleton Loader --- */
+        .skeleton-loader {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+          margin-top: 40px;
+        }
+        .skeleton-panel {
+          height: 400px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+          0% { opacity: 0.5; }
+          50% { opacity: 0.8; }
+          100% { opacity: 0.5; }
+        }
+
+        @media (max-width: 900px) {
+            .skeleton-loader { grid-template-columns: 1fr; }
+        }
       `}} />
     </div>
   );

@@ -219,6 +219,16 @@ export default function AuthPage() {
           padding: 32px 24px;
         }
 
+        .page-wrapper{
+          background-color: transparent; 
+          color: #e2e8f0;
+          min-height: 100vh;
+          width: 100%;
+          padding: 0 3%;
+          font-family: var(--font-serif, serif);
+        }
+
+
         .profile-header {
           display: flex;
           align-items: center;

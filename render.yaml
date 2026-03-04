@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: trends-store-ai
+    env: python
+    region: singapore # Optional: Choose close to your user base
+    plan: free # Optional: Defaults to starter/free
+    rootDir: ai-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: GROQ_API_KEY
+        sync: false # User must enter this in dashboard
+      - key: API_KEY
+        sync: false # User must enter this in dashboard
+      - key: MYSQL_HOST
+        sync: false
+      - key: MYSQL_USER
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        sync: false

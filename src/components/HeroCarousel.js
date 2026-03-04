@@ -3,28 +3,8 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function HeroCarousel() {
-  const [slides, setSlides] = useState([]);
+export default function HeroCarousel({ slides = [] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  // Fetch Slides
-  useEffect(() => {
-    async function fetchSlides() {
-      try {
-        const res = await fetch('/api/hero-slides');
-        if (res.ok) {
-          const data = await res.json();
-          setSlides(data);
-        }
-      } catch (error) {
-        console.error("Failed to load hero slides", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchSlides();
-  }, []);
 
   // Auto-Rotate
   useEffect(() => {
@@ -45,8 +25,7 @@ export default function HeroCarousel() {
     setCurrentIndex((prev) => (prev + 1) % slides.length);
   };
 
-  if (loading) return <div className="hero-skeleton" />;
-  if (slides.length === 0) return null;
+  if (!slides || slides.length === 0) return null;
 
   return (
     <div className="hero-carousel">
@@ -82,7 +61,8 @@ export default function HeroCarousel() {
         </>
       )}
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .hero-carousel {
           position: relative;
           width: 100%;
@@ -182,7 +162,7 @@ export default function HeroCarousel() {
            .hero-nav.prev { left: 10px; }
            .hero-nav.next { right: 10px; }
         }
-      `}</style>
+      `}} />
     </div>
   );
 }

@@ -67,7 +67,10 @@ export default function AdminProductsPage() {
     setIngesting(true);
     try {
       const res = await fetch("/api/ingest", { method: "POST" });
-      if (!res.ok) throw new Error("Failed to refresh AI");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.details || errorData.error || "Failed to refresh AI");
+      }
       alert("✅ AI Knowledge Updated Successfully!");
     } catch (error) {
       console.error(error);

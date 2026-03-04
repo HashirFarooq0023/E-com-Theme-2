@@ -43,10 +43,20 @@ export default function TopNav({
   // Auto-fetch categories if not provided (e.g. on Auth page)
   useEffect(() => {
     if (categories.length === 0) {
+
+      // Check cache first
+      if (globalThis._categoriesCache) {
+        setFetchedCategories(globalThis._categoriesCache);
+        return;
+      }
+
       fetch('/api/categories')
         .then(res => res.json())
         .then(data => {
-          if (Array.isArray(data)) setFetchedCategories(data);
+          if (Array.isArray(data)) {
+            globalThis._categoriesCache = data; // Set cache
+            setFetchedCategories(data);
+          }
         })
         .catch(err => console.error("TopNav: Failed to load categories", err));
     }

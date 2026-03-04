@@ -23,22 +23,22 @@ export function useRouteAccess() {
         // Fetch session
         const res = await fetch('/api/auth/session');
         const data = await res.json();
-        
+
         const currentUser = data.user || null;
         const userRole = currentUser?.role || null;
-        
+
         // Check if user can access this route
         const hasAccess = canAccess(userRole, pathname);
-        
+
         setUser(currentUser);
         setAllowed(hasAccess);
-        
+
         // Redirect if access denied
         if (!hasAccess) {
           router.push('/');
           return;
         }
-        
+
       } catch (error) {
         console.error('Access check failed:', error);
         router.push('/');
